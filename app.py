@@ -25,12 +25,10 @@ app.layout = html.Section([
     ),
     html.Div(
         className="content2",
-        children=[
-            
-        ])
-            
-def tab_content(active_tab):
-    return "This is tab {}".format(active_tab)
+        
+        )
+    
+    ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
