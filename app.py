@@ -28,8 +28,8 @@ app.layout = html.Section([
     [
         dmc.TabsList(
             [
-                dmc.Tab("Info", icon=DashIconify(icon="bi:info-circle", width=15), value="info"),
-                dmc.Tab("Filter",icon=DashIconify(icon="tabler:settings", width=20), value="filter"),
+                dmc.Tab("Info", icon=DashIconify(icon="material-symbols:info-outline", width=20), value="info"),
+                dmc.Tab("Filter",icon=DashIconify(icon="mdi:funnel-cog-outline", width=20), value="filter"),
                 dmc.Tab("Download", icon=DashIconify(icon="material-symbols:cloud-download-outline", width=20), value="download"),
             ]
         ),
@@ -37,7 +37,6 @@ app.layout = html.Section([
             html.Div(
                 className="tab1-content",
                 children=[
-                    html.H4('Details'),
                     DashIconify(icon='mdi:database-arrow-down-outline', width=40, className='db_icon'),
                     html.H5('Feature layer'),
                     html.P('Dataset'),
@@ -63,11 +62,111 @@ app.layout = html.Section([
             html.Div(
                 className="table2-content",
                 children=[
+                    
+                    dmc.Accordion(
+                        style={'marginTop':30},
+                        radius=20,
+                        children=[dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl('Block Filter', className='acc_control_block'),
+                                dmc.AccordionPanel(
+                                    html.Div(
+                                        className='accordion-content',
+                                        children=[
+                                            html.H5('Block Name', style={'marginTop':20}),
+                                            dmc.MultiSelect(
+                                                placeholder="Select Block Name",
+                                                id="multiselect-block",
+                                                value=['test1'],
+                                                data=['test1','test2'],
+                                                style={'marginTop':10},
+                                                clearable=True,
+                                                searchable=True,
+                                                nothingFound= 'No Options Found'
+                                                ),
+                                            dmc.Text(id='output-block'), #output for multi-select
+                                            
+                                            html.H5('Status', style={'marginTop':20}),
+                                            dmc.Checkbox(id='checkbox-1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
+                                            dmc.Text(id='output-checkbox-1'), #output for checkbox 1
+                                            dmc.Checkbox(id='checkbox-2', label='Production',color='dark', checked=True, style={'marginTop':5}),
+                                            dmc.Text(id='output-checkbox-2'), #output for checkbox 2
+                                            
+                                            html.H5('Operator Name', style={'marginTop':20}),
+                                            dmc.MultiSelect(
+                                                placeholder="Select Operator Name",
+                                                id="multiselect-operator",
+                                                value=['test1'],
+                                                data=['test1','test2'],
+                                                style={'marginTop':10},
+                                                clearable=True,
+                                                searchable=True,
+                                                nothingFound= 'No Options Found'
+                                                ),
+                                            dmc.Text(id='output-operator'), #output for multi-select
+                                            
+                                            html.H5('Shape Area in Sq. Kilometers', style={'marginTop':20}),
+                                            dmc.RangeSlider(
+                                                id='range-slider',
+                                                value=[126, 220],
+                                                max=350,
+                                                min=0,
+                                                marks=[
+                                                    {'value':100, 'label':'100'},
+                                                    {'value':200, 'label':'200'},
+                                                    {'value':300, 'label':'300'}
+                                                    ],
+                                                style={'marginTop':10, 'marginBottom':30},
+                                                color='dark'),
+                                            dmc.Text(id='output-slider'), #output for range slider
+                                        ]
+                                    )
+                                )
+                            ], value='testing123'
+                        )
+                        ], variant='contained'
+                    ),
+                    
+                    dmc.Divider(label="Wellhead Filter", style={'marginTop':70, 'marginBottom':30}),
+                    
+                    html.H5('Borehole', style={'marginTop':20}),
                     dmc.MultiSelect(
-                        label="Block Name",
-                        placeholder="Select Block Name",
-                        id="multiselect-block",
-                        value=['test1','test2'])
+                        placeholder="Select Borehole Name",
+                        id="multiselect-borehole",
+                        value=['test1'],
+                        data=['test1','test2'],
+                        style={'width':400, 'marginTop':10},
+                        clearable=True,
+                        searchable=True,
+                        nothingFound= 'No Options Found'
+                        ),
+                    dmc.Text(id='output-borehole'), #output for multi-select
+                    
+                    html.H5('Porosity in %', style={'marginTop':20}),
+                    dmc.Slider(
+                        id='slider-porosity',
+                        value=20,
+                        max=100,
+                        min=0,
+                        marks=[
+                            {'value':20, 'label':'20%'},
+                            {'value':50, 'label':'50%'},
+                            {'value':80, 'label':'80%'}
+                            ],
+                        style={'width':400,'marginTop':10},
+                        color='dark'),
+                    dmc.Text(id='output-porosity'), #output for slider porosity
+                    
+                    html.H5('Type', style={'marginTop':30}),
+                    dmc.Checkbox(id='checkbox-wh1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
+                    dmc.Text(id='output-checkbox-wh1'), #output for checkbox 1
+                    dmc.Checkbox(id='checkbox-wh2', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
+                    dmc.Text(id='output-checkbox-wh2'), #output for checkbox 2
+                    dmc.Checkbox(id='checkbox-wh3', label='Delineation',color='dark', checked=True, style={'marginTop':5}),
+                    dmc.Text(id='output-checkbox-wh3'), #output for checkbox 3
+                    dmc.Checkbox(id='checkbox-wh4', label='Development',color='dark', checked=True, style={'marginTop':5}),
+                    dmc.Text(id='output-checkbox-wh4'), #output for checkbox 4
+                    
                     ]),
             value="filter"),
         dmc.TabsPanel("test3", value="download"),
