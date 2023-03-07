@@ -68,7 +68,7 @@ app.layout = html.Section([
                         radius=20,
                         children=[dmc.AccordionItem(
                             [
-                                dmc.AccordionControl('Block Filter', className='acc_control_block'),
+                                dmc.AccordionControl('Block Filter', icon=DashIconify(icon='mdi:surface-area',width=20),className='acc_control_block'),
                                 dmc.AccordionPanel(
                                     html.Div(
                                         className='accordion-content',
@@ -122,54 +122,81 @@ app.layout = html.Section([
                                         ]
                                     )
                                 )
-                            ], value='testing123'
+                            ], value='acc_control_block'
                         )
                         ], variant='contained'
                     ),
                     
-                    dmc.Divider(label="Wellhead Filter", style={'marginTop':70, 'marginBottom':30}),
-                    
-                    html.H5('Borehole', style={'marginTop':20}),
-                    dmc.MultiSelect(
-                        placeholder="Select Borehole Name",
-                        id="multiselect-borehole",
-                        value=['test1'],
-                        data=['test1','test2'],
-                        style={'width':400, 'marginTop':10},
-                        clearable=True,
-                        searchable=True,
-                        nothingFound= 'No Options Found'
-                        ),
-                    dmc.Text(id='output-borehole'), #output for multi-select
-                    
-                    html.H5('Porosity in %', style={'marginTop':20}),
-                    dmc.Slider(
-                        id='slider-porosity',
-                        value=20,
-                        max=100,
-                        min=0,
-                        marks=[
-                            {'value':20, 'label':'20%'},
-                            {'value':50, 'label':'50%'},
-                            {'value':80, 'label':'80%'}
-                            ],
-                        style={'width':400,'marginTop':10},
-                        color='dark'),
-                    dmc.Text(id='output-porosity'), #output for slider porosity
-                    
-                    html.H5('Type', style={'marginTop':30}),
-                    dmc.Checkbox(id='checkbox-wh1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
-                    dmc.Text(id='output-checkbox-wh1'), #output for checkbox 1
-                    dmc.Checkbox(id='checkbox-wh2', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
-                    dmc.Text(id='output-checkbox-wh2'), #output for checkbox 2
-                    dmc.Checkbox(id='checkbox-wh3', label='Delineation',color='dark', checked=True, style={'marginTop':5}),
-                    dmc.Text(id='output-checkbox-wh3'), #output for checkbox 3
-                    dmc.Checkbox(id='checkbox-wh4', label='Development',color='dark', checked=True, style={'marginTop':5}),
-                    dmc.Text(id='output-checkbox-wh4'), #output for checkbox 4
+                    dmc.Accordion(
+                        style={'marginTop':5, 'marginBottom':20},
+                        radius=20,
+                        children=[dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl('Wellhead Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20),className='acc_control_wellhead'),
+                                dmc.AccordionPanel(
+                                    html.Div(
+                                        className='accordion_content2',
+                                        children=[
+                                    html.H5('Borehole', style={'marginTop':20}),
+                                    dmc.MultiSelect(
+                                        placeholder="Select Borehole Name",
+                                        id="multiselect-borehole",
+                                        value=['test1'],
+                                        data=['test1','test2'],
+                                        style={'marginTop':10},
+                                        clearable=True,
+                                        searchable=True,
+                                        nothingFound= 'No Options Found'
+                                        ),
+                                    dmc.Text(id='output-borehole'), #output for multi-select
+                                    
+                                    html.H5('Porosity in %', style={'marginTop':20}),
+                                    dmc.Slider(
+                                        id='slider-porosity',
+                                        value=20,
+                                        max=100,
+                                        min=0,
+                                        marks=[
+                                            {'value':20, 'label':'20%'},
+                                            {'value':50, 'label':'50%'},
+                                            {'value':80, 'label':'80%'}
+                                            ],
+                                        style={'marginTop':10},
+                                        color='dark'),
+                                    dmc.Text(id='output-porosity'), #output for slider porosity
+                                    
+                                    html.H5('Type', style={'marginTop':30}),
+                                    dmc.Checkbox(id='checkbox-wh1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
+                                    dmc.Text(id='output-checkbox-wh1'), #output for checkbox 1
+                                    dmc.Checkbox(id='checkbox-wh2', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
+                                    dmc.Text(id='output-checkbox-wh2'), #output for checkbox 2
+                                    dmc.Checkbox(id='checkbox-wh3', label='Delineation',color='dark', checked=True, style={'marginTop':5}),
+                                    dmc.Text(id='output-checkbox-wh3'), #output for checkbox 3
+                                    dmc.Checkbox(id='checkbox-wh4', label='Development',color='dark', checked=True, style={'marginTop':5}),
+                                    dmc.Text(id='output-checkbox-wh4'), #output for checkbox 4
+                                        ]
+                                    )
+                                )
+                            ], value='acc_control_wellhead'
+                        )
+                        ], variant='contained'
+                    )
                     
                     ]),
             value="filter"),
-        dmc.TabsPanel("test3", value="download"),
+            
+            dmc.TabsPanel(
+                html.Div(
+                className='table3-content',
+                children=[
+                    dmc.Button('Download data as CSV', variant='outline',color='dark',radius='20px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                    html.Br(),
+                    dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='20px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':5}),
+                    html.Br(),
+                    dmc.Button('Download data as SHP', variant='outline',color='dark',radius='20px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':5})
+                ]
+                )
+    ,value="download"),
     ],
     color="dark",
     persistence_type="session",
