@@ -37,6 +37,7 @@ app.layout = html.Section([
             html.Div(
                 className="tab1-content",
                 children=[
+
                     DashIconify(icon='mdi:database-arrow-down-outline', width=40, className='db_icon'),
                     html.H5('Feature layer'),
                     html.P('Dataset'),
@@ -55,20 +56,25 @@ app.layout = html.Section([
                     
                     DashIconify(icon='material-symbols:lock-outline', width=40, className='lock_icon'),
                     html.H5('Request permission to use'),
-                    html.P('No License')
+                    html.P('No License'),
+
+                    dmc.Button('View full details', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='material-symbols:picture-as-pdf-outline',width=25), 
+                    style={'marginTop':30})
             ]),
             value="info"),
+
         dmc.TabsPanel(
             html.Div(
                 className="table2-content",
                 children=[
                     
                     dmc.Accordion(
+                        value='block_filter_val',
                         style={'marginTop':30},
-                        radius=20,
+                        radius=10,
                         children=[dmc.AccordionItem(
                             [
-                                dmc.AccordionControl('Block Filter', icon=DashIconify(icon='mdi:surface-area',width=20),className='acc_control_block'),
+                                dmc.AccordionControl('Block Filter', icon=DashIconify(icon='mdi:surface-area',width=20)),
                                 dmc.AccordionPanel(
                                     html.Div(
                                         className='accordion-content',
@@ -122,17 +128,18 @@ app.layout = html.Section([
                                         ]
                                     )
                                 )
-                            ], value='acc_control_block'
+                            ], value='block_filter_val'
                         )
                         ], variant='contained'
                     ),
                     
                     dmc.Accordion(
+                        value='wellhead_val',
                         style={'marginTop':5, 'marginBottom':20},
-                        radius=20,
+                        radius=10,
                         children=[dmc.AccordionItem(
                             [
-                                dmc.AccordionControl('Wellhead Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20),className='acc_control_wellhead'),
+                                dmc.AccordionControl('Wellhead Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20)),
                                 dmc.AccordionPanel(
                                     html.Div(
                                         className='accordion_content2',
@@ -177,7 +184,7 @@ app.layout = html.Section([
                                         ]
                                     )
                                 )
-                            ], value='acc_control_wellhead'
+                            ], value='wellhead_val'
                         )
                         ], variant='contained'
                     )
@@ -189,11 +196,11 @@ app.layout = html.Section([
                 html.Div(
                 className='table3-content',
                 children=[
-                    dmc.Button('Download data as CSV', variant='outline',color='dark',radius='20px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                    dmc.Button('Download data as CSV', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
                     html.Br(),
-                    dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='20px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':5}),
+                    dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':5}),
                     html.Br(),
-                    dmc.Button('Download data as SHP', variant='outline',color='dark',radius='20px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':5})
+                    dmc.Button('Download data as SHP', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':5})
                 ]
                 )
     ,value="download"),
@@ -202,7 +209,8 @@ app.layout = html.Section([
     persistence_type="session",
     value="info",
     variant="pills",
-    className="main-tabs"
+    className="main-tabs",
+    radius=10
     )
 ])
 
