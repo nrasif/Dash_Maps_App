@@ -23,28 +23,28 @@ body {
 }
 
 .content1 h1{
-    width: 25%;
+    width: 90%;
     color: #3F72AF;
     font-size: 40px;
     font-family: 'Ubuntu', sans-serif;
 }
 
 .content1 h4 {
-    width: 25%;
+    width: 90%;
     margin-top: 30px;
     font-size: 18px;
     font-family: 'Ubuntu', sans-serif;
 }
 
 .content1 p{
-    width: 25%;
+    width: 90%;
     padding-top: 20px;
     line-height: 23px;
     font-size: 16px;
 }
 
 .main-tabs{
-    width: 24%;
+    width: 90%;
     margin-left: 50px;
     margin-top: 30px;
 }
@@ -56,31 +56,31 @@ body {
 .db_icon{
     position: absolute;
     left: 50px;
-    top: 340px;
+    top: 365px;
 }
 
 .info_icon{
     position: absolute;
     left: 50px;
-    top: 408px;
+    top: 435px;
 }
 
 .date_icon{
     position: absolute;
     left: 50px;
-    top: 475px;
+    top: 500px;
 }
 
 .world_icon{
     position: absolute;
     left: 50px;
-    top: 543px;
+    top: 570px;
 }
 
 .lock_icon{
     position: absolute;
     left: 50px;
-    top: 610px;
+    top: 640px;
 }
 
 .tab1-content h5{
@@ -110,4 +110,27 @@ body {
     position: absolute;
     right: 0;
     top: 0;
+}
+
+.drawer-class{
+    overflow-y: auto;
+}
+
+.drawer-class::-webkit-scrollbar {
+    width: 8px;
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    bottom: 20px;
+  }
+  
+.drawer-class::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+  }
+
+.icon-button{
+    position: absolute;
+    top: 450px;
+    left: 50px;
 }
