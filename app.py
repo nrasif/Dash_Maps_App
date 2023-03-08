@@ -4,6 +4,7 @@ from dash import html
 from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
+import dash_leaflet as dl
 
 import pandas as pd
 import numpy as np
@@ -134,8 +135,7 @@ app.layout = html.Section([
                     ),
                     
                     dmc.Accordion(
-                        value='wellhead_val',
-                        style={'marginTop':5, 'marginBottom':20},
+                        style={'marginTop':10, 'marginBottom':20},
                         radius=10,
                         children=[dmc.AccordionItem(
                             [
@@ -198,9 +198,9 @@ app.layout = html.Section([
                 children=[
                     dmc.Button('Download data as CSV', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
                     html.Br(),
-                    dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':5}),
+                    dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
                     html.Br(),
-                    dmc.Button('Download data as SHP', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':5})
+                    dmc.Button('Download data as SHP', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10})
                 ]
                 )
     ,value="download"),
@@ -211,6 +211,19 @@ app.layout = html.Section([
     variant="pills",
     className="main-tabs",
     radius=10
+    ),
+    
+    html.Div(
+        className='content2',
+        children=[
+            dl.Map([dl.TileLayer()],
+                    center=[5.3, 96.3],
+                    zoom=10,
+                    style={
+                        'width': '1350px',
+                        'height': '960px'
+                    })
+        ]
     )
 ])
 

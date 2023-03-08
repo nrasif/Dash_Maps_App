@@ -19,7 +19,7 @@ body {
 .content1{
     position: relative;
     margin-top: 70px;
-    margin-left: 100px;
+    margin-left: 50px;
 }
 
 .content1 h1{
@@ -45,7 +45,7 @@ body {
 
 .main-tabs{
     width: 24%;
-    margin-left: 100px;
+    margin-left: 50px;
     margin-top: 30px;
 }
 
@@ -55,32 +55,32 @@ body {
 
 .db_icon{
     position: absolute;
-    left: 100px;
-    top: 360px;
+    left: 50px;
+    top: 340px;
 }
 
 .info_icon{
     position: absolute;
-    left: 100px;
-    top: 430px;
+    left: 50px;
+    top: 408px;
 }
 
 .date_icon{
     position: absolute;
-    left: 100px;
-    top: 495px;
+    left: 50px;
+    top: 475px;
 }
 
 .world_icon{
     position: absolute;
-    left: 100px;
-    top: 565px;
+    left: 50px;
+    top: 543px;
 }
 
 .lock_icon{
     position: absolute;
-    left: 100px;
-    top: 635px;
+    left: 50px;
+    top: 610px;
 }
 
 .tab1-content h5{
@@ -104,4 +104,10 @@ body {
     font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
 
+}
+
+.content2{
+    position: absolute;
+    right: 0;
+    top: 0;
 }
