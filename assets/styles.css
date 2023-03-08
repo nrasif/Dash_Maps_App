@@ -107,9 +107,8 @@ body {
 }
 
 .content2{
-    position: absolute;
-    right: 0;
-    top: 0;
+    position: relative;
+    margin-left: 5%;
 }
 
 .drawer-class{

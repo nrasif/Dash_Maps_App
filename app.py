@@ -35,7 +35,7 @@ app.layout = html.Section([
                             children=[
                                 html.H1('Dummy Block', className="title-block"),
                                 html.H4('Summary'),
-                                html.P('This block data are dummy, intended for testing purposes. All blocks are not representing the real conditions')
+                                html.P('This block data are dummy, intended for testing purposes. All blocks are not representing the real conditions.')
                             ]
                         ),
                         dmc.Tabs(
@@ -232,7 +232,7 @@ app.layout = html.Section([
     html.Div(
     className='content2',
     children=[
-        dl.Map([dl.TileLayer()],
+        dl.Map([dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
                 center=[5.3, 96.3],
                 zoom=10,
                 style={
@@ -241,7 +241,15 @@ app.layout = html.Section([
                     'height': '960px'
                 })
     ]
-)
+),
+    html.Div(
+        className='dashboard-content',
+        children=[
+            html.H1('Dummy Block'),
+            html.H4('Summary'),
+            html.P('This block data are dummy, intended for testing purposes. All blocks are not representing the real conditions.')
+        ]
+    )
 ])
 
 @app.callback(
