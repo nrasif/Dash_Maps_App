@@ -128,8 +128,16 @@ body {
     border-radius: 10px;
   }
 
-.icon-button{
-    position: absolute;
-    top: 450px;
-    left: 50px;
+.map-main{
+    z-index: 0;
+    width: 1787px;
+    height: 965px;
+    margin-left:20px;
+
+    mask-image: linear-gradient(#000, rgba(0,0,0,-2));
+    -webkit-mask-image: linear-gradient(#000, rgba(0,0,0,-2));
+}
+
+.icon-button-2{
+    margin-top: 450px;
 }

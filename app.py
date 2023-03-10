@@ -8,6 +8,7 @@ import dash_leaflet as dl
 
 import pandas as pd
 import numpy as np
+from datetime import datetime, date
 
 
 # -------------------------------------Dash Apps----------------------------------------
@@ -20,14 +21,21 @@ app.layout = html.Section([
     html.Div(className='drawer',
             children=[
                 
-                dmc.ActionIcon(DashIconify(icon="material-symbols:double-arrow-rounded", width=40), size="40", id='open-drawer', className='icon-button'),
+                dmc.Button("View Map Details", variant="outline", color='dark', id='open-drawer', className='drawer-button-1', style={
+                    "transform": "rotate(270deg)",
+                    "position":"absolute",
+                    "top": "450px",
+                    "left": "0px"
+                    }),
                 dmc.Drawer(
                     id='drawer',
                     size='630px',
-                    lockScroll=True,
+                    lockScroll=False,
                     zIndex=999,
                     overlayOpacity=0,
                     className='drawer-class',
+                    transition='slide-right',
+                    transitionDuration=500,
                     
                     children=[
                          html.Div(
@@ -125,6 +133,13 @@ app.layout = html.Section([
                                                                     ),
                                                                 dmc.Text(id='output-operator'), #output for multi-select
                                                                 
+                                                                html.H5('Production Start Date', style={'marginTop':20}),
+                                                                dcc.DatePickerSingle(
+                                                                    date=datetime.now().date(),
+                                                                    display_format='MMM Do, YYYY',
+                                                                    style={'marginTop':10, 'marginBottom':30}
+                                                                ),
+                                                                
                                                                 html.H5('Shape Area in Sq. Kilometers', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
                                                                     id='range-slider',
@@ -148,6 +163,7 @@ app.layout = html.Section([
                                         ),
                                         
                                         dmc.Accordion(
+                                            value='wellhead_val',
                                             style={'marginTop':10, 'marginBottom':20},
                                             radius=10,
                                             children=[dmc.AccordionItem(
@@ -237,17 +253,31 @@ app.layout = html.Section([
                 zoom=10,
                 style={
                     'z-index':'0',
-                    'width': '1800px',
-                    'height': '960px'
+                    'width': '1787px',
+                    'height': '965px',
+                    'marginLeft':'20px',
                 })
     ]
 ),
     html.Div(
         className='dashboard-content',
         children=[
-            html.H1('Dummy Block'),
-            html.H4('Summary'),
-            html.P('This block data are dummy, intended for testing purposes. All blocks are not representing the real conditions.')
+            
+            dmc.Button("View Dashboard Details", variant="outline", color='dark', id='open-drawer-2', className='icon-button-2', style={
+                "transform": "rotate(270deg)",
+                "position":"absolute",
+                "top": "1000px",
+                "left": "-25px"
+                }),
+            dmc.Drawer(
+                    id='drawer-2',
+                    size='630px',
+                    lockScroll=False,
+                    zIndex=999,
+                    overlayOpacity=0,
+                    className='drawer-class',
+                    transition='slide-right',
+                    transitionDuration=500)
         ]
     )
 ])
@@ -255,9 +285,16 @@ app.layout = html.Section([
 @app.callback(
     Output("drawer", "opened"),
     Input("open-drawer", "n_clicks"),
-    prevent_initial_call=True,
+    prevent_initial_call=True
 )
-def drawer_demo(n_clicks):
+
+@app.callback(
+    Output('drawer-2','opened'),
+    Input('open-drawer-2','n_clicks'),
+    prevent_initial_call=True
+)
+
+def drawer(n_clicks):
     return True
 
 if __name__ == '__main__':
