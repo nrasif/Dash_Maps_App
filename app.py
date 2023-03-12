@@ -8,7 +8,7 @@ import dash_leaflet as dl
 
 import pandas as pd
 import numpy as np
-from datetime import datetime, date
+from datetime import datetime, timedelta, date
 
 
 # -------------------------------------Dash Apps----------------------------------------
@@ -117,8 +117,12 @@ app.layout = html.Section([
                                                                 html.H5('Status', style={'marginTop':20}),
                                                                 dmc.Checkbox(id='checkbox-1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
                                                                 dmc.Text(id='output-checkbox-1'), #output for checkbox 1
-                                                                dmc.Checkbox(id='checkbox-2', label='Production',color='dark', checked=True, style={'marginTop':5}),
+                                                                dmc.Checkbox(id='checkbox-2', label='Development',color='dark', checked=True, style={'marginTop':5}),
                                                                 dmc.Text(id='output-checkbox-2'), #output for checkbox 2
+                                                                dmc.Checkbox(id='checkbox-3', label='Production',color='dark', checked=True, style={'marginTop':5}),
+                                                                dmc.Text(id='output-checkbox-3'), #output for checkbox 1
+                                                                dmc.Checkbox(id='checkbox-4', label='Abandoned',color='dark', checked=True, style={'marginTop':5}),
+                                                                dmc.Text(id='output-checkbox-4'), #output for checkbox 2
                                                                 
                                                                 html.H5('Operator Name', style={'marginTop':20}),
                                                                 dmc.MultiSelect(
@@ -132,13 +136,21 @@ app.layout = html.Section([
                                                                     nothingFound= 'No Options Found'
                                                                     ),
                                                                 dmc.Text(id='output-operator'), #output for multi-select
-                                                                
-                                                                html.H5('Production Start Date', style={'marginTop':20}),
-                                                                dcc.DatePickerSingle(
-                                                                    date=datetime.now().date(),
-                                                                    display_format='MMM Do, YYYY',
-                                                                    style={'marginTop':10, 'marginBottom':30}
-                                                                ),
+
+                                                                html.H5('Number of Wells', style={'marginTop':20}),
+                                                                dmc.RangeSlider(
+                                                                    id='num-wells',
+                                                                    value=[0, 20],
+                                                                    max=60,
+                                                                    min=0,
+                                                                    marks=[
+                                                                        {'value':10, 'label':'10'},
+                                                                        {'value':30, 'label':'30'},
+                                                                        {'value':50, 'label':'50'}
+                                                                        ],
+                                                                    style={'marginTop':10, 'marginBottom':30},
+                                                                    color='dark'),
+                                                                dmc.Text(id='output-slider-num-wells'), #output for range slider
                                                                 
                                                                 html.H5('Shape Area in Sq. Kilometers', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
@@ -147,13 +159,28 @@ app.layout = html.Section([
                                                                     max=350,
                                                                     min=0,
                                                                     marks=[
-                                                                        {'value':100, 'label':'100'},
-                                                                        {'value':200, 'label':'200'},
-                                                                        {'value':300, 'label':'300'}
+                                                                        {'value':50, 'label':'50'},
+                                                                        {'value':150, 'label':'150'},
+                                                                        {'value':250, 'label':'250'}
                                                                         ],
                                                                     style={'marginTop':10, 'marginBottom':30},
                                                                     color='dark'),
                                                                 dmc.Text(id='output-slider'), #output for range slider
+
+                                                                html.H5('Estimated Reserves in Millions of Barrels Oil', style={'marginTop':20}),
+                                                                dmc.RangeSlider(
+                                                                    id='range-slider-reserve',
+                                                                    value=[0, 500],
+                                                                    max=600,
+                                                                    min=0,
+                                                                    marks=[
+                                                                        {'value':100, 'label':'100'},
+                                                                        {'value':300, 'label':'300'},
+                                                                        {'value':500, 'label':'500'}
+                                                                        ],
+                                                                    style={'marginTop':10, 'marginBottom':30},
+                                                                    color='dark'),
+                                                                dmc.Text(id='output-slider-reserve'), #output for range slider
                                                             ]
                                                         )
                                                     )
@@ -168,12 +195,12 @@ app.layout = html.Section([
                                             radius=10,
                                             children=[dmc.AccordionItem(
                                                 [
-                                                    dmc.AccordionControl('Wellhead Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20)),
+                                                    dmc.AccordionControl('Well Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20)),
                                                     dmc.AccordionPanel(
                                                         html.Div(
                                                             className='accordion_content2',
                                                             children=[
-                                                        html.H5('Borehole', style={'marginTop':20}),
+                                                        html.H5('Well Name', style={'marginTop':20}),
                                                         dmc.MultiSelect(
                                                             placeholder="Select Borehole Name",
                                                             id="multiselect-borehole",
@@ -186,30 +213,59 @@ app.layout = html.Section([
                                                             ),
                                                         dmc.Text(id='output-borehole'), #output for multi-select
                                                         
-                                                        html.H5('Porosity in %', style={'marginTop':20}),
-                                                        dmc.Slider(
-                                                            id='slider-porosity',
-                                                            value=20,
-                                                            max=100,
+                                                        html.H5('TVDSS in Meters', style={'marginTop':20}),
+                                                        dmc.RangeSlider(
+                                                            id='range-slider-TVDSS',
+                                                            value=[500,2000],
+                                                            max=5000,
                                                             min=0,
                                                             marks=[
-                                                                {'value':20, 'label':'20%'},
-                                                                {'value':50, 'label':'50%'},
-                                                                {'value':80, 'label':'80%'}
+                                                                {'value':2000, 'label':'2000m'},
+                                                                {'value':4000, 'label':'4000m'},
                                                                 ],
                                                             style={'marginTop':10},
                                                             color='dark'),
                                                         dmc.Text(id='output-porosity'), #output for slider porosity
+
+                                                        html.H5('Wellbore Orientation', style={'marginTop':30}),
+                                                        dmc.Checkbox(id='checkbox-or1', label='Vertical',color='dark', checked=True, style={'marginTop':10}),
+                                                        dmc.Text(id='output-checkbox-or1'), #output for checkbox 1
+                                                        dmc.Checkbox(id='checkbox-or2', label='Directional',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-or2'), #output for checkbox 2
+                                                        dmc.Checkbox(id='checkbox-or3', label='Horizontal',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-or3'), #output for checkbox 3
+
+                                                        html.H5('Status', style={'marginTop':20}),
+                                                        dmc.Checkbox(id='checkbox-stat1', label='Active',color='dark', checked=True, style={'marginTop':10}),
+                                                        dmc.Text(id='output-checkbox-stat'), #output for checkbox 1
+                                                        dmc.Checkbox(id='checkbox-stat2', label='Inactive',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-stat2'), #output for checkbox 2
+                                                        dmc.Checkbox(id='checkbox-stat3', label='Suspended',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-stat3'), #output for checkbox 3
+                                                        dmc.Checkbox(id='checkbox-stat4', label='Abandoned',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-stat4'), #output for checkbox 4
+
+                                                        html.H5('Purpose', style={'marginTop':20}),
+                                                        dmc.Checkbox(id='checkbox-purpose1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
+                                                        dmc.Text(id='output-checkbox-purpose1'), #output for checkbox 1
+                                                        dmc.Checkbox(id='checkbox-purpose2', label='Development',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-purpose2'), #output for checkbox 2
+                                                        dmc.Checkbox(id='checkbox-purpose3', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-purpose3'), #output for checkbox 3
+                                                        dmc.Checkbox(id='checkbox-purpose4', label='Monitoring',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-purpose4'), #output for checkbox 4
+
+                                                        html.H5('Type', style={'marginTop':20}),
+                                                        dmc.Checkbox(id='checkbox-type1', label='Oil',color='dark', checked=True, style={'marginTop':10}),
+                                                        dmc.Text(id='output-checkbox-type1'), #output for checkbox 1
+                                                        dmc.Checkbox(id='checkbox-type2', label='Gas',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-type2'), #output for checkbox 2
+                                                        dmc.Checkbox(id='checkbox-type3', label='Injection',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-type3'), #output for checkbox 3
+                                                        dmc.Checkbox(id='checkbox-type4', label='Observation',color='dark', checked=True, style={'marginTop':5}),
+                                                        dmc.Text(id='output-checkbox-type4'), #output for checkbox 4
                                                         
-                                                        html.H5('Type', style={'marginTop':30}),
-                                                        dmc.Checkbox(id='checkbox-wh1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
-                                                        dmc.Text(id='output-checkbox-wh1'), #output for checkbox 1
-                                                        dmc.Checkbox(id='checkbox-wh2', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-wh2'), #output for checkbox 2
-                                                        dmc.Checkbox(id='checkbox-wh3', label='Delineation',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-wh3'), #output for checkbox 3
-                                                        dmc.Checkbox(id='checkbox-wh4', label='Development',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-wh4'), #output for checkbox 4
+
                                                             ]
                                                         )
                                                     )
