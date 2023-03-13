@@ -5,10 +5,29 @@ from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import dash_leaflet as dl
+from dash_extensions.javascript import arrow_function
 
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, date
+import json
+
+import geopandas as gpd
+
+all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
+all_blocks['tooltip'] = '<STRONG> Block Name: </STRONG>' + all_blocks.Block_Name + '<BR><STRONG> Status: </STRONG>' + all_blocks.Status + '<BR><STRONG> Operator: </STRONG>' + all_blocks.Operator + '<BR><STRONG> Number of Wells: </STRONG>' + all_blocks.num_wells.astype(str) + '<BR><STRONG> Area in Sq. Kilometers </STRONG>' + all_blocks.sq_km.astype(str) + '<BR><STRONG> Estimated Reserves in Million of Barrels: </STRONG>'+ all_blocks.est_reserve.astype(str)
+layer_blocks = dl.GeoJSON(id='block',
+                        data=json.loads(all_blocks.to_json()),
+                        hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
+                        options=dict(style=dict(color='#ADD8E6', 
+                                    weight=2, 
+                                    dashArray='30, 10',
+                                    dashOffset='1',
+                                    opacity=1,
+                                    )))
+
+
+
 
 
 # -------------------------------------Dash Apps----------------------------------------
@@ -304,9 +323,10 @@ app.layout = html.Section([
     html.Div(
     className='content2',
     children=[
-        dl.Map([dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
+        
+        dl.Map([layer_blocks, dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
                 center=[5.3, 96.3],
-                zoom=10,
+                zoom=11,
                 style={
                     'z-index':'0',
                     'width': '1787px',
