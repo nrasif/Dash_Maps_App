@@ -124,8 +124,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Block Name",
                                                                     id="multiselect-block",
-                                                                    value=['test1'],
-                                                                    data=['test1','test2'],
+                                                                    value=all_blocks['Block_Name'].to_list(),
+                                                                    data=all_blocks['Block_Name'].to_list(),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -147,8 +147,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Operator Name",
                                                                     id="multiselect-operator",
-                                                                    value=['test1'],
-                                                                    data=['test1','test2'],
+                                                                    value=pd.unique(all_blocks['Operator'].to_list()),
+                                                                    data=pd.unique(all_blocks['Operator'].to_list()),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
