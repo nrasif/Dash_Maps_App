@@ -124,8 +124,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Block Name",
                                                                     id="multiselect-block",
-                                                                    value=all_blocks['Block_Name'].to_list(),
-                                                                    data=all_blocks['Block_Name'].to_list(),
+                                                                    value=all_blocks['Block_Name'].unique().tolist(),
+                                                                    data=[],
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -147,8 +147,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Operator Name",
                                                                     id="multiselect-operator",
-                                                                    value=pd.unique(all_blocks['Operator'].to_list()),
-                                                                    data=pd.unique(all_blocks['Operator'].to_list()),
+                                                                    value=all_blocks['Operator'].unique().tolist(),
+                                                                    data=[],
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -159,7 +159,7 @@ app.layout = html.Section([
                                                                 html.H5('Number of Wells', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
                                                                     id='num-wells',
-                                                                    value=[0, 20],
+                                                                    value=[all_blocks['num_wells'].min(), all_blocks['num_wells'].max()],
                                                                     max=60,
                                                                     min=0,
                                                                     marks=[
@@ -173,8 +173,8 @@ app.layout = html.Section([
                                                                 
                                                                 html.H5('Shape Area in Sq. Kilometers', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
-                                                                    id='range-slider',
-                                                                    value=[126, 220],
+                                                                    id='km-slider',
+                                                                    value=[all_blocks['sq_km'].min(), all_blocks['sq_km'].max()],
                                                                     max=350,
                                                                     min=0,
                                                                     marks=[
@@ -189,7 +189,7 @@ app.layout = html.Section([
                                                                 html.H5('Estimated Reserves in Millions of Barrels Oil', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
                                                                     id='range-slider-reserve',
-                                                                    value=[0, 500],
+                                                                    value=[all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max()],
                                                                     max=600,
                                                                     min=0,
                                                                     marks=[
@@ -359,6 +359,29 @@ app.layout = html.Section([
 ])
 
 @app.callback(
+    Output('multiselect-block','data'),
+    Input('num-wells','value'),
+    Input('km-slider','value'),
+    Input('range-slider-reserve','value')
+)
+
+def set_block_option(chosen_numwell, chosen_km, chosen_reserve):
+    df_block = all_blocks[(all_blocks['num_wells'].isin(chosen_numwell)) & (all_blocks['sq_km'].isin(chosen_km)) & (all_blocks['est_reserve'].isin(chosen_reserve))]
+    return pd.unique(df_block['Block_Name'].to_list())
+
+@app.callback(
+    Output('multiselect-operator', 'data'),
+    Input('multiselect-block', 'value')
+)
+
+def set_operator_option(chosen_block):
+    if chosen_block is None:
+        df_operator=[]
+    else:
+        df_operator = all_blocks[all_blocks['Block_Name'].isin(chosen_block)]
+    return pd.unique(df_operator['Operator'].to_list())
+
+@app.callback(
     Output("drawer", "opened"),
     Input("open-drawer", "n_clicks"),
     prevent_initial_call=True
@@ -374,4 +397,4 @@ def drawer(n_clicks):
     return True
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port = 1514)
