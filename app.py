@@ -151,7 +151,7 @@ app.layout = html.Section([
                                                                     placeholder="Select Operator Name",
                                                                     id="multiselect-operator",
                                                                     value=all_blocks['Operator'].unique().tolist(),
-                                                                    data=[],
+                                                                    data=all_blocks['Operator'].unique().tolist(),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -378,25 +378,28 @@ app.layout = html.Section([
     Output('multiselect-block','data'),
     Input('num-wells','value'),
     Input('km-slider','value'),
-    Input('range-slider-reserve','value')
+    Input('range-slider-reserve','value'),
+    Input('checkbox_status_block','value'),
+    Input('multiselect-operator', 'value')
 )
 
-def set_block_option(chosen_numwell, chosen_km, chosen_reserve):
-    df_block = all_blocks[(all_blocks['num_wells'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['est_reserve'].between(chosen_reserve[0], chosen_reserve[1]))]
+def set_block_option(chosen_numwell, chosen_km, chosen_reserve, chosen_status, chosen_operator):
+    df_block = all_blocks[(all_blocks['num_wells'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['est_reserve'].between(chosen_reserve[0], chosen_reserve[1])) & (all_blocks['Status'].isin(chosen_status)) & (all_blocks['Operator'].isin(chosen_operator))]
     return pd.unique(df_block['Block_Name'].to_list())
 
-@app.callback(
-    Output('multiselect-operator', 'data'),
-    Input('multiselect-block','value'),
-    Input('multiselect-block', 'data')
-)
+# @app.callback(
+#     Output('multiselect-operator', 'data'),
+#     Input('multiselect-block','value'),
+#     Input('multiselect-block', 'data')
+# )
 
-def set_operator_option(chosen_block_value, chosen_block_data):
-    # if chosen_block is None:
-    #     df_operator=[]
-    # else:
-    df_operator = all_blocks[(all_blocks['Block_Name'].isin(chosen_block_value)) & (all_blocks['Block_Name'].isin(chosen_block_data))]
-    return pd.unique(df_operator['Operator'].to_list())
+# def set_operator_option(chosen_block_value, chosen_block_data):
+#     # if chosen_block is None:
+#     #     df_operator=[]
+#     # else:
+#     df_operator = all_blocks[(all_blocks['Block_Name'].isin(chosen_block_value)) & (all_blocks['Block_Name'].isin(chosen_block_data))]
+#     return pd.unique(df_operator['Operator'].to_list())
+
 
 @app.callback(
     Output("drawer", "opened"),
