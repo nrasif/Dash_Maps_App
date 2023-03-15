@@ -134,14 +134,17 @@ app.layout = html.Section([
                                                                 dmc.Text(id='output-block'), #output for multi-select
                                                                 
                                                                 html.H5('Status', style={'marginTop':20}),
-                                                                dmc.Checkbox(id='checkbox-1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
-                                                                dmc.Text(id='output-checkbox-1'), #output for checkbox 1
-                                                                dmc.Checkbox(id='checkbox-2', label='Development',color='dark', checked=True, style={'marginTop':5}),
-                                                                dmc.Text(id='output-checkbox-2'), #output for checkbox 2
-                                                                dmc.Checkbox(id='checkbox-3', label='Production',color='dark', checked=True, style={'marginTop':5}),
-                                                                dmc.Text(id='output-checkbox-3'), #output for checkbox 1
-                                                                dmc.Checkbox(id='checkbox-4', label='Abandoned',color='dark', checked=True, style={'marginTop':5}),
-                                                                dmc.Text(id='output-checkbox-4'), #output for checkbox 2
+                                                                dmc.CheckboxGroup(
+                                                                    id='checkbox_status_block',
+                                                                    orientation='vertical',
+                                                                    children=[
+                                                                        dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
+                                                                        dmc.Checkbox(label='Development',value='Development',color='dark', style={'marginTop':-15}),
+                                                                        dmc.Checkbox(label='Production',value='Production',color='dark', style={'marginTop':-15}),
+                                                                        dmc.Checkbox(label='Abandoned',value='Abandoned',color='dark', style={'marginTop':-15})
+                                                                    ],
+                                                                    value=['Exploration','Development','Production','Abandoned']
+                                                                ),
                                                                 
                                                                 html.H5('Operator Name', style={'marginTop':20}),
                                                                 dmc.MultiSelect(
@@ -247,43 +250,56 @@ app.layout = html.Section([
                                                         dmc.Text(id='output-porosity'), #output for slider porosity
 
                                                         html.H5('Wellbore Orientation', style={'marginTop':30}),
-                                                        dmc.Checkbox(id='checkbox-or1', label='Vertical',color='dark', checked=True, style={'marginTop':10}),
-                                                        dmc.Text(id='output-checkbox-or1'), #output for checkbox 1
-                                                        dmc.Checkbox(id='checkbox-or2', label='Directional',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-or2'), #output for checkbox 2
-                                                        dmc.Checkbox(id='checkbox-or3', label='Horizontal',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-or3'), #output for checkbox 3
+                                                        dmc.CheckboxGroup(
+                                                            id='checkbox_orientation_well',
+                                                            orientation='vertical',
+                                                            children=[
+                                                                dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Development',value='Development',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Appraisal',value='Appraisal',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15})
+                                                            ],
+                                                            value=[]
+                                                        ),
 
                                                         html.H5('Status', style={'marginTop':20}),
-                                                        dmc.Checkbox(id='checkbox-stat1', label='Active',color='dark', checked=True, style={'marginTop':10}),
-                                                        dmc.Text(id='output-checkbox-stat'), #output for checkbox 1
-                                                        dmc.Checkbox(id='checkbox-stat2', label='Inactive',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-stat2'), #output for checkbox 2
-                                                        dmc.Checkbox(id='checkbox-stat3', label='Suspended',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-stat3'), #output for checkbox 3
-                                                        dmc.Checkbox(id='checkbox-stat4', label='Abandoned',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-stat4'), #output for checkbox 4
+                                                        dmc.CheckboxGroup(
+                                                            id='checkbox_status_well',
+                                                            orientation='vertical',
+                                                            children=[
+                                                                dmc.Checkbox(label='Active',value='Active',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Inactive',value='Inactive',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Suspended',value='Suspended',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Abandoned',value='Abandoned',color='dark', style={'marginTop':-15})
+                                                            ],
+                                                            value=[]
+                                                        ),
 
                                                         html.H5('Purpose', style={'marginTop':20}),
-                                                        dmc.Checkbox(id='checkbox-purpose1', label='Exploration',color='dark', checked=True, style={'marginTop':10}),
-                                                        dmc.Text(id='output-checkbox-purpose1'), #output for checkbox 1
-                                                        dmc.Checkbox(id='checkbox-purpose2', label='Development',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-purpose2'), #output for checkbox 2
-                                                        dmc.Checkbox(id='checkbox-purpose3', label='Appraisal',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-purpose3'), #output for checkbox 3
-                                                        dmc.Checkbox(id='checkbox-purpose4', label='Monitoring',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-purpose4'), #output for checkbox 4
+                                                        dmc.CheckboxGroup(
+                                                            id='checkbox_purpose_well',
+                                                            orientation='vertical',
+                                                            children=[
+                                                                dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Development',value='Development',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Appraisal',value='Appraisal',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15})
+                                                            ],
+                                                            value=[]
+                                                        ),
 
                                                         html.H5('Type', style={'marginTop':20}),
-                                                        dmc.Checkbox(id='checkbox-type1', label='Oil',color='dark', checked=True, style={'marginTop':10}),
-                                                        dmc.Text(id='output-checkbox-type1'), #output for checkbox 1
-                                                        dmc.Checkbox(id='checkbox-type2', label='Gas',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-type2'), #output for checkbox 2
-                                                        dmc.Checkbox(id='checkbox-type3', label='Injection',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-type3'), #output for checkbox 3
-                                                        dmc.Checkbox(id='checkbox-type4', label='Observation',color='dark', checked=True, style={'marginTop':5}),
-                                                        dmc.Text(id='output-checkbox-type4'), #output for checkbox 4
-                                                        
+                                                        dmc.CheckboxGroup(
+                                                            id='checkbox_type_well',
+                                                            orientation='vertical',
+                                                            children=[
+                                                                dmc.Checkbox(label='Oil',value='Oil',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Gas',value='Gas',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Injection',value='Injection',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Observation',value='Observation',color='dark', style={'marginTop':-15})
+                                                            ],
+                                                            value=[]
+                                                        )
 
                                                             ]
                                                         )
@@ -366,19 +382,20 @@ app.layout = html.Section([
 )
 
 def set_block_option(chosen_numwell, chosen_km, chosen_reserve):
-    df_block = all_blocks[(all_blocks['num_wells'].isin(chosen_numwell)) & (all_blocks['sq_km'].isin(chosen_km)) & (all_blocks['est_reserve'].isin(chosen_reserve))]
+    df_block = all_blocks[(all_blocks['num_wells'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['est_reserve'].between(chosen_reserve[0], chosen_reserve[1]))]
     return pd.unique(df_block['Block_Name'].to_list())
 
 @app.callback(
     Output('multiselect-operator', 'data'),
-    Input('multiselect-block', 'value')
+    Input('multiselect-block','value'),
+    Input('multiselect-block', 'data')
 )
 
-def set_operator_option(chosen_block):
-    if chosen_block is None:
-        df_operator=[]
-    else:
-        df_operator = all_blocks[all_blocks['Block_Name'].isin(chosen_block)]
+def set_operator_option(chosen_block_value, chosen_block_data):
+    # if chosen_block is None:
+    #     df_operator=[]
+    # else:
+    df_operator = all_blocks[(all_blocks['Block_Name'].isin(chosen_block_value)) & (all_blocks['Block_Name'].isin(chosen_block_data))]
     return pd.unique(df_operator['Operator'].to_list())
 
 @app.callback(
