@@ -16,7 +16,7 @@ import geopandas as gpd
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_blocks['tooltip'] = '<STRONG> Block Name: </STRONG>' + all_blocks.Block_Name + '<BR><STRONG> Status: </STRONG>' + all_blocks.Status + '<BR><STRONG> Operator: </STRONG>' + all_blocks.Operator + '<BR><STRONG> Number of Wells: </STRONG>' + all_blocks.num_wells.astype(str) + '<BR><STRONG> Area in Sq. Kilometers </STRONG>' + all_blocks.sq_km.astype(str) + '<BR><STRONG> Estimated Reserves in Million of Barrels: </STRONG>'+ all_blocks.est_reserve.astype(str)
-layer_blocks = dl.GeoJSON(id='block',
+layer_blocks = dl.GeoJSON(id='block_load',
                         data=json.loads(all_blocks.to_json()),
                         hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
                         options=dict(style=dict(color='#ADD8E6', 
@@ -40,11 +40,12 @@ app.layout = html.Section([
     html.Div(className='drawer',
             children=[
                 
-                dmc.Button("View Map Details", variant="outline", color='dark', id='open-drawer', className='drawer-button-1', style={
+                dmc.Button("View Map Details", variant="outline", color='dark', radius='10px', id='open-drawer', className='drawer-button-1',leftIcon=DashIconify(icon='material-symbols:map-outline', width=25),
+                           style={
                     "transform": "rotate(270deg)",
                     "position":"absolute",
                     "top": "450px",
-                    "left": "0px"
+                    "left": "-19px"
                     }),
                 dmc.Drawer(
                     id='drawer',
@@ -125,7 +126,7 @@ app.layout = html.Section([
                                                                     placeholder="Select Block Name",
                                                                     id="multiselect-block",
                                                                     value=all_blocks['Block_Name'].unique().tolist(),
-                                                                    data=[],
+                                                                    data=all_blocks['Block_Name'].unique().tolist(),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -203,6 +204,9 @@ app.layout = html.Section([
                                                                     style={'marginTop':10, 'marginBottom':30},
                                                                     color='dark'),
                                                                 dmc.Text(id='output-slider-reserve'), #output for range slider
+                                                                
+                                                                dmc.Button('Reset', id='reset-block', variant='outline', color='dark', radius='10px', leftIcon=DashIconify(icon='material-symbols:restart-alt', width=25), 
+                                                                           style={'marginTop':'25px'})
                                                             ]
                                                         )
                                                     )
@@ -340,7 +344,8 @@ app.layout = html.Section([
     className='content2',
     children=[
         
-        dl.Map([layer_blocks, dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
+        dl.Map([dl.GeoJSON(layer_blocks),
+                dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
                 center=[5.3, 96.3],
                 zoom=11,
                 style={
@@ -355,11 +360,12 @@ app.layout = html.Section([
         className='dashboard-content',
         children=[
             
-            dmc.Button("View Dashboard Details", variant="outline", color='dark', id='open-drawer-2', className='icon-button-2', style={
+            dmc.Button("View Dashboard Details", variant="outline", color='dark', id='open-drawer-2', className='icon-button-2',radius='10px', leftIcon=DashIconify(icon='mdi:graph-pie-outline', width=25), 
+                       style={
                 "transform": "rotate(270deg)",
                 "position":"absolute",
                 "top": "1000px",
-                "left": "-25px"
+                "left": "-48px"
                 }),
             dmc.Drawer(
                     id='drawer-2',
@@ -387,18 +393,27 @@ def set_block_option(chosen_numwell, chosen_km, chosen_reserve, chosen_status, c
     df_block = all_blocks[(all_blocks['num_wells'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['est_reserve'].between(chosen_reserve[0], chosen_reserve[1])) & (all_blocks['Status'].isin(chosen_status)) & (all_blocks['Operator'].isin(chosen_operator))]
     return pd.unique(df_block['Block_Name'].to_list())
 
-# @app.callback(
-#     Output('multiselect-operator', 'data'),
-#     Input('multiselect-block','value'),
-#     Input('multiselect-block', 'data')
-# )
+@app.callback(
+    Output('multiselect-block','value'),
+    Output('num-wells','value'),
+    Output('km-slider','value'),
+    Output('range-slider-reserve','value'),
+    Output('checkbox_status_block','value'),
+    Output('multiselect-operator','value'),
+    Input('reset-block','n_clicks')
+)
 
-# def set_operator_option(chosen_block_value, chosen_block_data):
-#     # if chosen_block is None:
-#     #     df_operator=[]
-#     # else:
-#     df_operator = all_blocks[(all_blocks['Block_Name'].isin(chosen_block_value)) & (all_blocks['Block_Name'].isin(chosen_block_data))]
-#     return pd.unique(df_operator['Operator'].to_list())
+def reset_filter_block(clicked):
+    
+    reset_df = all_blocks[(all_blocks['num_wells'].between(all_blocks['num_wells'].min(), all_blocks['num_wells'].max())) & (all_blocks['sq_km'].between(all_blocks['sq_km'].min(), all_blocks['sq_km'].max())) & (all_blocks['est_reserve'].between(all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max())) & (all_blocks['Status'].isin(all_blocks['Status'])) & (all_blocks['Operator'].isin(all_blocks['Operator']))]
+    reset_block_name = pd.unique(reset_df['Block_Name'].to_list())
+    reset_num_blocks = reset_df['num_wells'].min(), reset_df['num_wells'].max()
+    reset_km_blocks = reset_df['sq_km'].min(), reset_df['sq_km'].max()
+    reset_reserve_blocks = reset_df['est_reserve'].min(), reset_df['est_reserve'].max()
+    reset_status_blocks = ['Exploration','Development','Production','Abandoned']
+    reset_operator_blocks = pd.unique(reset_df['Operator'].to_list())
+    
+    return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
 
 
 @app.callback(
