@@ -7,6 +7,8 @@ from dash_iconify import DashIconify
 import dash_leaflet as dl
 from dash_extensions.javascript import arrow_function
 
+from statistics import mean
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, date
@@ -16,19 +18,6 @@ import geopandas as gpd
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_blocks['tooltip'] = '<STRONG> Block Name: </STRONG>' + all_blocks.Block_Name + '<BR><STRONG> Status: </STRONG>' + all_blocks.Status + '<BR><STRONG> Operator: </STRONG>' + all_blocks.Operator + '<BR><STRONG> Number of Wells: </STRONG>' + all_blocks.num_wells.astype(str) + '<BR><STRONG> Area in Sq. Kilometers </STRONG>' + all_blocks.sq_km.astype(str) + '<BR><STRONG> Estimated Reserves in Million of Barrels: </STRONG>'+ all_blocks.est_reserve.astype(str)
-layer_blocks = dl.GeoJSON(id='block_load',
-                        data=json.loads(all_blocks.to_json()),
-                        hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
-                        options=dict(style=dict(color='#ADD8E6', 
-                                    weight=2, 
-                                    dashArray='30, 10',
-                                    dashOffset='1',
-                                    opacity=1,
-                                    )))
-
-
-
-
 
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -342,19 +331,7 @@ app.layout = html.Section([
              ]), #closing first div (drawer)
     html.Div(
     className='content2',
-    children=[
-        
-        dl.Map([dl.GeoJSON(layer_blocks),
-                dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
-                center=[5.3, 96.3],
-                zoom=11,
-                style={
-                    'z-index':'0',
-                    'width': '1787px',
-                    'height': '965px',
-                    'marginLeft':'20px',
-                })
-    ]
+    id='output-map'
 ),
     html.Div(
         className='dashboard-content',
@@ -414,6 +391,39 @@ def reset_filter_block(clicked):
     reset_operator_blocks = pd.unique(reset_df['Operator'].to_list())
     
     return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
+
+@app.callback(
+    Output('output-map','children'),
+    Input('multiselect-block','value'),
+    Input('multiselect-block','data')
+)
+
+def plot_map(block_submitted_value, block_submitted_data):
+    edited_layer= all_blocks[(all_blocks['Block_Name'].isin(block_submitted_value)) & (all_blocks['Block_Name'].isin(block_submitted_data))]
+    layer_blocks = dl.GeoJSON(id='block_load',
+                        data=json.loads(edited_layer.to_json()),
+                        hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
+                        options=dict(style=dict(color='#ADD8E6', 
+                                    weight=2, 
+                                    dashArray='30, 10',
+                                    dashOffset='1',
+                                    opacity=1,
+                                    )))
+    bounds = edited_layer.total_bounds
+    x = mean([bounds[0], bounds[2]])
+    y = mean([bounds[1], bounds[3]])
+    location = (y, x)
+    
+    return dl.Map([dl.GeoJSON(layer_blocks),
+                    dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
+                    center=[y, x],
+                    zoom=10,
+                    style={
+                        'z-index':'0',
+                        'width': '1787px',
+                        'height': '965px',
+                        'marginLeft':'20px',
+                    })
 
 
 @app.callback(
