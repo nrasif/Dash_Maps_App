@@ -400,6 +400,19 @@ def reset_filter_block(clicked):
 
 def plot_map(block_submitted_value, block_submitted_data):
     edited_layer= all_blocks[(all_blocks['Block_Name'].isin(block_submitted_value)) & (all_blocks['Block_Name'].isin(block_submitted_data))]
+    if edited_layer.empty:
+        # Generate map without polygons
+        return dl.Map([dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+                        dl.GestureHandling()],
+                        center=[5.3, 96.3],
+                        zoom=10,
+                        style={
+                            'z-index':'0',
+                            'width': '1750px',
+                            'height': '965px',
+                            'marginLeft':'20px',
+                        })
+
     layer_blocks = dl.GeoJSON(id='block_load',
                         data=json.loads(edited_layer.to_json()),
                         hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
@@ -415,12 +428,13 @@ def plot_map(block_submitted_value, block_submitted_data):
     location = (y, x)
     
     return dl.Map([dl.GeoJSON(layer_blocks),
-                    dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), dl.GestureHandling(), dl.FullscreenControl()],
+                    dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
+                    dl.GestureHandling()],
                     center=[y, x],
                     zoom=10,
                     style={
                         'z-index':'0',
-                        'width': '1787px',
+                        'width': '1750px',
                         'height': '965px',
                         'marginLeft':'20px',
                     })
