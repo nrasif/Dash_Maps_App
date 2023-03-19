@@ -247,12 +247,11 @@ app.layout = html.Section([
                                                             id='checkbox_orientation_well',
                                                             orientation='vertical',
                                                             children=[
-                                                                dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
-                                                                dmc.Checkbox(label='Development',value='Development',color='dark', style={'marginTop':-15}),
-                                                                dmc.Checkbox(label='Appraisal',value='Appraisal',color='dark', style={'marginTop':-15}),
-                                                                dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15})
+                                                                dmc.Checkbox(label='Vertical',value='Vertical',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Horizontal',value='Horizontal',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Directional',value='Directional',color='dark', style={'marginTop':-15})
                                                             ],
-                                                            value=[]
+                                                            value=['Vertical','Horizontal','Directional']
                                                         ),
 
                                                         html.H5('Status', style={'marginTop':20}),
@@ -262,10 +261,11 @@ app.layout = html.Section([
                                                             children=[
                                                                 dmc.Checkbox(label='Active',value='Active',color='dark', style={'marginTop':0}),
                                                                 dmc.Checkbox(label='Inactive',value='Inactive',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Shut-in',value='Shut-in',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Suspended',value='Suspended',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Abandoned',value='Abandoned',color='dark', style={'marginTop':-15})
                                                             ],
-                                                            value=[]
+                                                            value=['Active','Inactive','Shut-in','Suspended','Abandoned']
                                                         ),
 
                                                         html.H5('Purpose', style={'marginTop':20}),
@@ -274,11 +274,12 @@ app.layout = html.Section([
                                                             orientation='vertical',
                                                             children=[
                                                                 dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
-                                                                dmc.Checkbox(label='Development',value='Development',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Appraisal',value='Appraisal',color='dark', style={'marginTop':-15}),
-                                                                dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15})
+                                                                dmc.Checkbox(label='Injection',value='Injection',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Abandonment',value='Abandonment',color='dark', style={'marginTop':-15})
                                                             ],
-                                                            value=[]
+                                                            value=['Exploration', 'Appraisal', 'Injection', 'Monitoring','Abandonment']
                                                         ),
 
                                                         html.H5('Type', style={'marginTop':20}),
@@ -288,10 +289,10 @@ app.layout = html.Section([
                                                             children=[
                                                                 dmc.Checkbox(label='Oil',value='Oil',color='dark', style={'marginTop':0}),
                                                                 dmc.Checkbox(label='Gas',value='Gas',color='dark', style={'marginTop':-15}),
-                                                                dmc.Checkbox(label='Injection',value='Injection',color='dark', style={'marginTop':-15}),
+                                                                dmc.Checkbox(label='Water',value='Water',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Observation',value='Observation',color='dark', style={'marginTop':-15})
                                                             ],
-                                                            value=[]
+                                                            value=['Oil','Gas','Water','Observation']
                                                         )
 
                                                             ]
