@@ -274,12 +274,13 @@ app.layout = html.Section([
                                                             orientation='vertical',
                                                             children=[
                                                                 dmc.Checkbox(label='Exploration',value='Exploration',color='dark', style={'marginTop':0}),
+                                                                dmc.Checkbox(label='Production',value='Production',color='dark',style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Appraisal',value='Appraisal',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Injection',value='Injection',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Monitoring',value='Monitoring',color='dark', style={'marginTop':-15}),
                                                                 dmc.Checkbox(label='Abandonment',value='Abandonment',color='dark', style={'marginTop':-15})
                                                             ],
-                                                            value=['Exploration', 'Appraisal', 'Injection', 'Monitoring','Abandonment']
+                                                            value=['Exploration','Production','Appraisal','Injection','Monitoring','Abandonment']
                                                         ),
 
                                                         html.H5('Type', style={'marginTop':20}),
@@ -422,7 +423,7 @@ def reset_filter_well(clicked):
     reset_well_name = pd.unique(reset_df['Well_Name'].to_list())
     reset_orient = ['Vertical', 'Horizontal', 'Directional']
     reset_status = ['Active', 'Inactive','Shut-in','Suspended','Abandoned']
-    reset_purpose = ['Exploration','Appraisal','Injection','Monitoring','Abandonment']
+    reset_purpose = ['Exploration','Production','Appraisal','Injection','Monitoring','Abandonment']
     reset_type = ['Oil','Gas','Water','Observation']
     
     return reset_well_name, reset_orient, reset_status, reset_purpose, reset_type
@@ -435,12 +436,37 @@ def reset_filter_well(clicked):
     Input('multiselect-borehole','data')
 )
 
-def plot_map(block_submitted_value, block_submitted_data):
+def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, well_submitted_data):
     edited_layer= all_blocks[(all_blocks['Block_Name'].isin(block_submitted_value)) & (all_blocks['Block_Name'].isin(block_submitted_data))]
-    if edited_layer.empty:
-        # Generate map without polygons
+    edited_point = all_wells[(all_wells['Well_Name'].isin(well_submitted_value)) & (all_wells['Well_Name'].isin(well_submitted_data))]
+    
+    layer_blocks = dl.GeoJSON(id='block_load',
+                            data=json.loads(edited_layer.to_json()),
+                            hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
+                            options=dict(style=dict(color='#ADD8E6', 
+                                        weight=2, 
+                                        dashArray='30, 10',
+                                        dashOffset='1',
+                                        opacity=1,
+                                        )))
+    bounds = edited_layer.total_bounds
+    x = mean([bounds[0], bounds[2]])
+    y = mean([bounds[1], bounds[3]])
+    location = (y, x)
+    
+    layer_well = dl.GeoJSON(id='point_load',
+                            data=json.loads(edited_point.to_json()))
+    bounds_point = edited_point.total_bounds
+    x_point = mean([bounds_point[0], bounds_point[2]])
+    y_point = mean([bounds_point[1], bounds_point[3]])
+    location_point = (y_point, x_point)
+    
+    if edited_layer.empty and edited_point.empty:
+        # Generate map without polygons and points
         return dl.Map([dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
-                        dl.GestureHandling()],
+                        dl.GestureHandling(),
+                        dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
+                                        activeColor="#214097", completedColor="#972158")],
                         center=[5.3, 96.3],
                         zoom=10,
                         style={
@@ -449,24 +475,44 @@ def plot_map(block_submitted_value, block_submitted_data):
                             'height': '965px',
                             'marginLeft':'20px',
                         })
-
-    layer_blocks = dl.GeoJSON(id='block_load',
-                        data=json.loads(edited_layer.to_json()),
-                        hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
-                        options=dict(style=dict(color='#ADD8E6', 
-                                    weight=2, 
-                                    dashArray='30, 10',
-                                    dashOffset='1',
-                                    opacity=1,
-                                    )))
-    bounds = edited_layer.total_bounds
-    x = mean([bounds[0], bounds[2]])
-    y = mean([bounds[1], bounds[3]])
-    location = (y, x)
-    
+    elif edited_layer.empty:
+        #Generate map without polygons
+        return dl.Map([dl.GeoJSON(layer_well),
+                        dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+                        dl.GestureHandling(),
+                        dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
+                                        activeColor="#C29200", completedColor="#972158")],
+                        center=[y_point, x_point],
+                        zoom=10,
+                        style={
+                                'z-index':'0',
+                                'width': '1750px',
+                                'height': '965px',
+                                'marginLeft':'20px',
+                        })
+    elif edited_point.empty:
+        #Generate map without points
+        return dl.Map([dl.GeoJSON(layer_blocks),
+                        dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
+                        dl.GestureHandling(),
+                        dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
+                                        activeColor="#C29200", completedColor="#972158")],
+                        center=[y, x],
+                        zoom=10,
+                        style={
+                            'z-index':'0',
+                            'width': '99%',
+                            'height': '965px',
+                            'marginLeft':'20px',
+                            'float':'right'
+                        })
+        
     return dl.Map([dl.GeoJSON(layer_blocks),
+                    dl.GeoJSON(layer_well),
                     dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
-                    dl.GestureHandling()],
+                    dl.GestureHandling(),
+                    dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
+                                    activeColor="#C29200", completedColor="#972158")],
                     center=[y, x],
                     zoom=10,
                     style={
