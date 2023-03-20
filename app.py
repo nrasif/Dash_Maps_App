@@ -1,6 +1,5 @@
 import dash
 from dash import Dash, html, dcc
-from dash import html
 from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -18,6 +17,8 @@ import geopandas as gpd
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_blocks['tooltip'] = '<STRONG> Block Name: </STRONG>' + all_blocks.Block_Name + '<BR><STRONG> Status: </STRONG>' + all_blocks.Status + '<BR><STRONG> Operator: </STRONG>' + all_blocks.Operator + '<BR><STRONG> Number of Wells: </STRONG>' + all_blocks.num_wells.astype(str) + '<BR><STRONG> Area in Sq. Kilometers </STRONG>' + all_blocks.sq_km.astype(str) + '<BR><STRONG> Estimated Reserves in Million of Barrels: </STRONG>'+ all_blocks.est_reserve.astype(str)
+
+all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -226,21 +227,20 @@ app.layout = html.Section([
                                                             searchable=True,
                                                             nothingFound= 'No Options Found'
                                                             ),
-                                                        dmc.Text(id='output-borehole'), #output for multi-select
                                                         
-                                                        html.H5('TVDSS in Meters', style={'marginTop':20}),
-                                                        dmc.RangeSlider(
-                                                            id='range-slider-TVDSS',
-                                                            value=[500,2000],
-                                                            max=5000,
-                                                            min=0,
-                                                            marks=[
-                                                                {'value':2000, 'label':'2000m'},
-                                                                {'value':4000, 'label':'4000m'},
-                                                                ],
-                                                            style={'marginTop':10},
-                                                            color='dark'),
-                                                        dmc.Text(id='output-porosity'), #output for slider porosity
+                                                        # html.H5('TVDSS in Meters', style={'marginTop':20}),
+                                                        # dmc.RangeSlider(
+                                                        #     id='range-slider-TVDSS',
+                                                        #     value=[500,2000],
+                                                        #     max=5000,
+                                                        #     min=0,
+                                                        #     marks=[
+                                                        #         {'value':2000, 'label':'2000m'},
+                                                        #         {'value':4000, 'label':'4000m'},
+                                                        #         ],
+                                                        #     style={'marginTop':10},
+                                                        #     color='dark'),
+                                                        # dmc.Text(id='output-porosity'), #output for slider porosity
 
                                                         html.H5('Wellbore Orientation', style={'marginTop':30}),
                                                         dmc.CheckboxGroup(
@@ -293,7 +293,9 @@ app.layout = html.Section([
                                                                 dmc.Checkbox(label='Observation',value='Observation',color='dark', style={'marginTop':-15})
                                                             ],
                                                             value=['Oil','Gas','Water','Observation']
-                                                        )
+                                                        ),
+                                                        dmc.Button('Reset', id='reset_well', variant='outline', color='dark', radius='10px', leftIcon=DashIconify(icon='material-symbols:restart-alt', width=25), 
+                                                                    style={'marginTop':'25px'})
 
                                                             ]
                                                         )
@@ -372,6 +374,18 @@ def set_block_option(chosen_numwell, chosen_km, chosen_reserve, chosen_status, c
     return pd.unique(df_block['Block_Name'].to_list())
 
 @app.callback(
+    Output('multiselect-borehole','data'),
+    Input('checkbox_orientation_well','value'),
+    Input('checkbox_status_well','value'),
+    Input('checkbox_purpose_well','value'),
+    Input('checkbox_type_well','value')
+)
+
+def set_well_option(chosen_orientation, chosen_status, chosen_purpose, chosen_type):
+    df_well = all_wells[(all_wells['Well_Orientation'].isin(chosen_orientation)) & (all_wells['Well_Status'].isin(chosen_status)) & (all_wells['Well_Purpose'].isin(chosen_purpose)) & (all_wells['Well_Type'].isin(chosen_type))]
+    return pd.unique(df_well['Well_Name'].to_list())
+
+@app.callback(
     Output('multiselect-block','value'),
     Output('num-wells','value'),
     Output('km-slider','value'),
@@ -394,9 +408,31 @@ def reset_filter_block(clicked):
     return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
 
 @app.callback(
+    Output('multiselect-borehole','value'),
+    Output('checkbox_orientation_well','value'),
+    Output('checkbox_status_well','value'),
+    Output('checkbox_purpose_well','value'),
+    Output('checkbox_type_well','value'),
+    Input('reset_well','n_clicks')
+)
+
+def reset_filter_well(clicked):
+    
+    reset_df = all_wells[(all_wells['Well_Orientation'].isin(all_wells['Well_Orientation'])) & (all_wells['Well_Status'].isin(all_wells['Well_Status'])) & (all_wells['Well_Purpose'].isin(all_wells['Well_Purpose'])) & (all_wells['Well_Type'].isin(all_wells['Well_Type']))]
+    reset_well_name = pd.unique(reset_df['Well_Name'].to_list())
+    reset_orient = ['Vertical', 'Horizontal', 'Directional']
+    reset_status = ['Active', 'Inactive','Shut-in','Suspended','Abandoned']
+    reset_purpose = ['Exploration','Appraisal','Injection','Monitoring','Abandonment']
+    reset_type = ['Oil','Gas','Water','Observation']
+    
+    return reset_well_name, reset_orient, reset_status, reset_purpose, reset_type
+
+@app.callback(
     Output('output-map','children'),
     Input('multiselect-block','value'),
-    Input('multiselect-block','data')
+    Input('multiselect-block','data'),
+    Input('multiselect-borehole','value'),
+    Input('multiselect-borehole','data')
 )
 
 def plot_map(block_submitted_value, block_submitted_data):
@@ -435,9 +471,10 @@ def plot_map(block_submitted_value, block_submitted_data):
                     zoom=10,
                     style={
                         'z-index':'0',
-                        'width': '1750px',
+                        'width': '99%',
                         'height': '965px',
                         'marginLeft':'20px',
+                        'float':'right'
                     })
 
 
