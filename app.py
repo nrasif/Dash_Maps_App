@@ -122,7 +122,6 @@ app.layout = html.Section([
                                                                     searchable=True,
                                                                     nothingFound= 'No Options Found'
                                                                     ),
-                                                                dmc.Text(id='output-block'), #output for multi-select
                                                                 
                                                                 html.H5('Status', style={'marginTop':20}),
                                                                 dmc.CheckboxGroup(
@@ -148,7 +147,6 @@ app.layout = html.Section([
                                                                     searchable=True,
                                                                     nothingFound= 'No Options Found'
                                                                     ),
-                                                                dmc.Text(id='output-operator'), #output for multi-select
 
                                                                 html.H5('Number of Wells', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
@@ -163,7 +161,6 @@ app.layout = html.Section([
                                                                         ],
                                                                     style={'marginTop':10, 'marginBottom':30},
                                                                     color='dark'),
-                                                                dmc.Text(id='output-slider-num-wells'), #output for range slider
                                                                 
                                                                 html.H5('Shape Area in Sq. Kilometers', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
@@ -178,7 +175,6 @@ app.layout = html.Section([
                                                                         ],
                                                                     style={'marginTop':10, 'marginBottom':30},
                                                                     color='dark'),
-                                                                dmc.Text(id='output-slider'), #output for range slider
 
                                                                 html.H5('Estimated Reserves in Millions of Barrels Oil', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
@@ -193,7 +189,6 @@ app.layout = html.Section([
                                                                         ],
                                                                     style={'marginTop':10, 'marginBottom':30},
                                                                     color='dark'),
-                                                                dmc.Text(id='output-slider-reserve'), #output for range slider
                                                                 
                                                                 dmc.Button('Reset', id='reset-block', variant='outline', color='dark', radius='10px', leftIcon=DashIconify(icon='material-symbols:restart-alt', width=25), 
                                                                            style={'marginTop':'25px'})
@@ -463,12 +458,12 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     
     if edited_layer.empty and edited_point.empty:
         # Generate map without polygons and points
-        return dl.Map([dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+        return dl.Map(children=[dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#214097", completedColor="#972158")],
                         center=[5.3, 96.3],
-                        zoom=10,
+                        zoom=11,
                         style={
                             'z-index':'0',
                             'width': '1750px',
@@ -477,13 +472,13 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         })
     elif edited_layer.empty:
         #Generate map without polygons
-        return dl.Map([dl.GeoJSON(layer_well),
+        return dl.Map(children=[dl.GeoJSON(layer_well),
                         dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
                         center=[y_point, x_point],
-                        zoom=10,
+                        zoom=11,
                         style={
                                 'z-index':'0',
                                 'width': '1750px',
@@ -492,13 +487,13 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         })
     elif edited_point.empty:
         #Generate map without points
-        return dl.Map([dl.GeoJSON(layer_blocks),
+        return dl.Map(children=[dl.GeoJSON(layer_blocks),
                         dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
                         center=[y, x],
-                        zoom=10,
+                        zoom=11,
                         style={
                             'z-index':'0',
                             'width': '99%',
@@ -507,14 +502,14 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                             'float':'right'
                         })
         
-    return dl.Map([dl.GeoJSON(layer_blocks),
+    return dl.Map(children=[dl.GeoJSON(layer_blocks),
                     dl.GeoJSON(layer_well),
                     dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
                     dl.GestureHandling(),
                     dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                     activeColor="#C29200", completedColor="#972158")],
                     center=[y, x],
-                    zoom=10,
+                    zoom=11,
                     style={
                         'z-index':'0',
                         'width': '99%',
