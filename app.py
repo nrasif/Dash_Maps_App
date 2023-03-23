@@ -16,8 +16,6 @@ import json
 import geopandas as gpd
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
-all_blocks['tooltip'] = '<STRONG> Block Name: </STRONG>' + all_blocks.Block_Name + '<BR><STRONG> Status: </STRONG>' + all_blocks.Status + '<BR><STRONG> Operator: </STRONG>' + all_blocks.Operator + '<BR><STRONG> Number of Wells: </STRONG>' + all_blocks.num_wells.astype(str) + '<BR><STRONG> Area in Sq. Kilometers </STRONG>' + all_blocks.sq_km.astype(str) + '<BR><STRONG> Estimated Reserves in Million of Barrels: </STRONG>'+ all_blocks.est_reserve.astype(str)
-
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
 # -------------------------------------Dash Apps----------------------------------------
@@ -308,11 +306,14 @@ app.layout = html.Section([
                                     html.Div(
                                     className='table3-content',
                                     children=[
-                                        dmc.Button('Download data as CSV', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                        dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                        dcc.Download(id='download_csv_df'),
                                         html.Br(),
-                                        dmc.Button('Download data as GeoJSON', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                        dmc.Button('Download data as GeoJSON', id='GeoJSON-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                        dcc.Download(id='download_geojson_df'),
                                         html.Br(),
-                                        dmc.Button('Download data as SHP', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10})
+                                        dmc.Button('Download data as SHP', id='SHP-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10}),
+                                        dcc.Download(id='download_shp_df')
                                     ]
                                     )
                         ,value="download"),
@@ -517,7 +518,32 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
+    
+@app.callback(
+    Output('download_csv_df', 'data'),
+    Input('CSV-button', 'n_clicks'),
+    prevent_initial_call=True
+)
 
+def generate_csv(n_clicks):
+    return dcc.send_data_frame(all_blocks.to_csv, "testing.json")
+
+@app.callback(
+    Output('download_geojson_df','data'),
+    Input('GeoJSON-button','n_clicks'),
+    prevent_initial_call=True
+)
+def generate_geojson(n_clicks):
+    return dcc.send_data_frame(all_blocks.to_json, "testing.json")
+
+# @app.callback(
+#     Output('download_shp_df','data'),
+#     Input('SHP-button','n_clicks'),
+#     prevent_initial_call=True
+# )
+
+# def generate_shp(n_clicks):
+#     return dcc.send_data_frame(all_blocks.to_file('.shp'), 'testing.shp')
 
 @app.callback(
     Output("drawer", "opened"),
