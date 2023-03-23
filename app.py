@@ -526,7 +526,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
 )
 
 def generate_csv(n_clicks):
-    return dcc.send_data_frame(all_blocks.to_csv, "testing.json")
+    return dcc.send_data_frame(all_blocks.to_csv, "MyCSV_Data.csv")
 
 @app.callback(
     Output('download_geojson_df','data'),
@@ -534,7 +534,13 @@ def generate_csv(n_clicks):
     prevent_initial_call=True
 )
 def generate_geojson(n_clicks):
-    return dcc.send_data_frame(all_blocks.to_json, "testing.json")
+    with open('blocks.geojson' , 'w') as file:
+        file.write(all_blocks.to_json())
+
+    # Read the generated JSON file and send it as bytes
+    with open('blocks.geojson', 'r') as file:
+        data = file.read()
+    return dcc.send_bytes(data.encode(), "MyGeoJSON_Data.json")
 
 # @app.callback(
 #     Output('download_shp_df','data'),
