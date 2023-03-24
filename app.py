@@ -60,7 +60,7 @@ app.layout = html.Section([
                                     children=[
                                         dmc.Text(
                                             '''
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi luctus elit at eros accumsan iaculis. Nulla facilisi. Morbi vitae venenatis ante. Nulla dui tellus, euismod at malesuada ac, luctus quis orci. Nullam in eros mollis, vulputate neque ut, vulputate dolor. In sed ultrices mauris. Ut vitae dolor augue. Ut ac purus eu felis scelerisque facilisis. Donec consectetur odio orci, non volutpat eros suscipit vestibulum. Quisque a fermentum massa. Sed ac nibh nibh. Morbi sollicitudin scelerisque lectus eu lobortis. Suspendisse in tincidunt neque. Donec vel sem nisl. Proin mollis purus quis magna faucibus tristique. Nunc lacinia ante eu erat egestas scelerisque.
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi luctus elit at eros accumsan iaculis. Nulla facilisi. Morbi vitae venenatis ante. Nulla dui tellus, euismod at malesuada ac, luctus quis orci. Nullam in eros mollis, vulputate neque ut, vulputate dolor. In sed ultrices mauris. Ut vitae dolor augue. Ut ac purus eu felis scelerisque facilisis. Donec consectetur odio orci, non volutpat eros suscipit vestibulum. Quisque a fermentum massa. Sed ac nibh nibh. Morbi sollicitudin scelerisque lectus eu lobortis.
                                             '''
                                         )
                                     ]
@@ -102,7 +102,7 @@ app.layout = html.Section([
                                         html.P('No License'),
 
                                         dmc.Button('View full details', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='material-symbols:picture-as-pdf-outline',width=25), 
-                                        style={'marginTop':30})
+                                        style={'marginTop':30, 'marginBottom':30})
                                 ]),
                                 value="info"),
 
@@ -352,7 +352,7 @@ app.layout = html.Section([
                                             radius='10px',
                                             p='md',
                                             withBorder=1,
-                                            style={'marginTop':30}
+                                            style={'marginTop':30, 'marginBottom':30}
                                         )
                                     ]
                                     )
