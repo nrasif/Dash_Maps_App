@@ -534,11 +534,8 @@ def generate_csv(n_clicks):
     prevent_initial_call=True
 )
 def generate_geojson(n_clicks):
-    with open('blocks.geojson' , 'w') as file:
-        file.write(all_blocks.to_json())
-
     # Read the generated JSON file and send it as bytes
-    with open('blocks.geojson', 'r') as file:
+    with open('GeoJSON files/blocks.geojson', 'r') as file:
         data = file.read()
     return dcc.send_bytes(data.encode(), "MyGeoJSON_Data.json")
 
