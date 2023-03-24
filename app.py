@@ -57,6 +57,7 @@ app.layout = html.Section([
                                     showLabel='Show more',
                                     hideLabel='Hide',
                                     maxHeight=50,
+                                    style={'marginBottom':35},
                                     children=[
                                         dmc.Text(
                                             '''
