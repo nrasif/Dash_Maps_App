@@ -36,11 +36,12 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
-.content1 p{
+.summary-content{
     width: 90%;
     padding-top: 20px;
     line-height: 23px;
     font-size: 16px;
+    text-align: justify;
 }
 
 .main-tabs{

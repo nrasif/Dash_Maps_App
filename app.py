@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, date
 import json
+import zipfile
 
 import geopandas as gpd
 
@@ -51,7 +52,19 @@ app.layout = html.Section([
                             children=[
                                 html.H1('Dummy Block', className="title-block"),
                                 html.H4('Summary'),
-                                html.P('This block data are dummy, intended for testing purposes. All blocks are not representing the real conditions.')
+                                dmc.Spoiler(
+                                    className='summary-content',
+                                    showLabel='Show more',
+                                    hideLabel='Hide',
+                                    maxHeight=50,
+                                    children=[
+                                        dmc.Text(
+                                            '''
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi luctus elit at eros accumsan iaculis. Nulla facilisi. Morbi vitae venenatis ante. Nulla dui tellus, euismod at malesuada ac, luctus quis orci. Nullam in eros mollis, vulputate neque ut, vulputate dolor. In sed ultrices mauris. Ut vitae dolor augue. Ut ac purus eu felis scelerisque facilisis. Donec consectetur odio orci, non volutpat eros suscipit vestibulum. Quisque a fermentum massa. Sed ac nibh nibh. Morbi sollicitudin scelerisque lectus eu lobortis. Suspendisse in tincidunt neque. Donec vel sem nisl. Proin mollis purus quis magna faucibus tristique. Nunc lacinia ante eu erat egestas scelerisque.
+                                            '''
+                                        )
+                                    ]
+                                )
                             ]
                         ),
                         dmc.Tabs(
@@ -306,14 +319,41 @@ app.layout = html.Section([
                                     html.Div(
                                     className='table3-content',
                                     children=[
-                                        dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
-                                        dcc.Download(id='download_csv_df'),
-                                        html.Br(),
-                                        dmc.Button('Download data as GeoJSON', id='GeoJSON-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
-                                        dcc.Download(id='download_geojson_df'),
-                                        html.Br(),
-                                        dmc.Button('Download data as SHP', id='SHP-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10}),
-                                        dcc.Download(id='download_shp_df')
+                                        dmc.Paper(
+                                            children=[
+                                                html.H5('Blocks', style={'marginTop':5}),
+                                                dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                                dcc.Download(id='download_csv_df'),
+                                                html.Br(),
+                                                dmc.Button('Download data as GeoJSON', id='GeoJSON-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                                dcc.Download(id='download_geojson_df'),
+                                                html.Br(),
+                                                dmc.Button('Download data as SHP', id='SHP-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10,'marginBottom':10}),
+                                                dcc.Download(id='download_shp_df')
+                                                ],
+                                            radius='10px',
+                                            p='md',
+                                            withBorder=1,
+                                            style={'marginTop':30}
+                                            ),
+
+                                        dmc.Paper(
+                                            children=[
+                                            html.H5('Wells', style={'marginTop':5}),
+                                            dmc.Button('Download data as CSV', id='CSV-button2', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                            dcc.Download(id='download_csv_df2'),
+                                            html.Br(),
+                                            dmc.Button('Download data as GeoJSON', id='GeoJSON-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                            dcc.Download(id='download_geojson_df2'),
+                                            html.Br(),
+                                            dmc.Button('Download data as SHP', id='SHP-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10, 'marginBottom':10}),
+                                            dcc.Download(id='download_shp_df2'),
+                                            ],
+                                            radius='10px',
+                                            p='md',
+                                            withBorder=1,
+                                            style={'marginTop':30}
+                                        )
                                     ]
                                     )
                         ,value="download"),
@@ -539,14 +579,27 @@ def generate_geojson(n_clicks):
         data = file.read()
     return dcc.send_bytes(data.encode(), "MyGeoJSON_Data.json")
 
-# @app.callback(
-#     Output('download_shp_df','data'),
-#     Input('SHP-button','n_clicks'),
-#     prevent_initial_call=True
-# )
+@app.callback(
+    Output('download_shp_df','data'),
+    Input('SHP-button','n_clicks'),
+    prevent_initial_call=True
+)
 
-# def generate_shp(n_clicks):
-#     return dcc.send_data_frame(all_blocks.to_file('.shp'), 'testing.shp')
+def generate_shp(n_clicks):
+    # Write the data to a Shapefile
+    all_blocks.to_file('SHP files/all_blocks.shp')
+    
+    # Create a ZIP file containing all the Shapefile files
+    with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
+        for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
+            filename = 'SHP files/all_blocks{}'.format(ext)
+            if os.path.exists(filename):
+                zip.write(filename)
+
+    # Read the generated Shapefile and send it as bytes
+    with open('SHP zipfile/all_blocks.zip', 'rb') as file:
+        data = file.read()
+    return dcc.send_bytes(data, "MySHP_Data.zip")
 
 @app.callback(
     Output("drawer", "opened"),
