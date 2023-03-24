@@ -60,7 +60,7 @@ app.layout = html.Section([
                                     children=[
                                         dmc.Text(
                                             '''
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi luctus elit at eros accumsan iaculis. Nulla facilisi. Morbi vitae venenatis ante. Nulla dui tellus, euismod at malesuada ac, luctus quis orci. Nullam in eros mollis, vulputate neque ut, vulputate dolor. In sed ultrices mauris. Ut vitae dolor augue. Ut ac purus eu felis scelerisque facilisis. Donec consectetur odio orci, non volutpat eros suscipit vestibulum. Quisque a fermentum massa. Sed ac nibh nibh. Morbi sollicitudin scelerisque lectus eu lobortis.
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi luctus elit at eros accumsan iaculis. Nulla facilisi. Morbi vitae venenatis ante. Nulla dui tellus, euismod at malesuada ac, luctus quis orci. Nullam in eros mollis, vulputate neque ut, vulputate dolor. In sed ultrices mauris. Ut vitae dolor augue. Ut ac purus eu felis scelerisque facilisis. Donec consectetur odio orci, non volutpat eros suscipit vestibulum. Quisque a fermentum massa. Sed ac nibh nibh.
                                             '''
                                         )
                                     ]
@@ -321,38 +321,38 @@ app.layout = html.Section([
                                     children=[
                                         dmc.Paper(
                                             children=[
-                                                html.H5('Blocks', style={'marginTop':5}),
-                                                dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                                html.H4('Blocks', style={'marginTop':5, 'paddingLeft':10}),
+                                                dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                                 dcc.Download(id='download_csv_df'),
                                                 html.Br(),
-                                                dmc.Button('Download data as GeoJSON', id='GeoJSON-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                                dmc.Button('Download data as GeoJSON', id='GeoJSON-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10, 'marginLeft':10}),
                                                 dcc.Download(id='download_geojson_df'),
                                                 html.Br(),
-                                                dmc.Button('Download data as SHP', id='SHP-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10,'marginBottom':10}),
+                                                dmc.Button('Download data as SHP', id='SHP-button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10,'marginBottom':10, 'marginLeft':10}),
                                                 dcc.Download(id='download_shp_df')
                                                 ],
                                             radius='10px',
-                                            p='md',
+                                            p='xs',
                                             withBorder=1,
                                             style={'marginTop':30}
                                             ),
 
                                         dmc.Paper(
                                             children=[
-                                            html.H5('Wells', style={'marginTop':5}),
-                                            dmc.Button('Download data as CSV', id='CSV-button2', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25}),
+                                            html.H4('Wells', style={'marginTop':5, 'marginLeft':10}),
+                                            dmc.Button('Download data as CSV', id='CSV-button2', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                             dcc.Download(id='download_csv_df2'),
                                             html.Br(),
-                                            dmc.Button('Download data as GeoJSON', id='GeoJSON-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10}),
+                                            dmc.Button('Download data as GeoJSON', id='GeoJSON-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='mdi:code-json',width=25), style={'marginTop':10, 'marginLeft':10}),
                                             dcc.Download(id='download_geojson_df2'),
                                             html.Br(),
-                                            dmc.Button('Download data as SHP', id='SHP-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10, 'marginBottom':10}),
+                                            dmc.Button('Download data as SHP', id='SHP-button2',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='gis:shape-file',width=25), style={'marginTop':10, 'marginBottom':10, 'marginLeft':10}),
                                             dcc.Download(id='download_shp_df2'),
                                             ],
                                             radius='10px',
-                                            p='md',
+                                            p='xs',
                                             withBorder=1,
-                                            style={'marginTop':30, 'marginBottom':30}
+                                            style={'marginTop':10, 'marginBottom':30}
                                         )
                                     ]
                                     )
