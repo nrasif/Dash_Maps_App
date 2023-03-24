@@ -55,33 +55,28 @@ body {
 }
 
 .db_icon{
-    position: absolute;
-    left: 50px;
-    top: 365px;
+    float: left;
+    margin-top: 25px;
 }
 
 .info_icon{
-    position: absolute;
-    left: 50px;
-    top: 435px;
+    float: left;
+    margin-top: 28px;
 }
 
 .date_icon{
-    position: absolute;
-    left: 50px;
-    top: 500px;
+    float: left;
+    margin-top: 25px;
 }
 
 .world_icon{
-    position: absolute;
-    left: 50px;
-    top: 570px;
+    float: left;
+    margin-top: 28px;
 }
 
 .lock_icon{
-    position: absolute;
-    left: 50px;
-    top: 640px;
+    float: left;
+    margin-top: 28px;
 }
 
 .tab1-content h5{
