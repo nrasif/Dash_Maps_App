@@ -29,7 +29,7 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
-.content1 h4 {
+.content1 h4, .table3-content h4 {
     width: 90%;
     margin-top: 30px;
     font-size: 18px;

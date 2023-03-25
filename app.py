@@ -5,6 +5,7 @@ import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import dash_leaflet as dl
 from dash_extensions.javascript import arrow_function
+from dash.exceptions import PreventUpdate
 
 from statistics import mean
 import os
@@ -18,6 +19,25 @@ import geopandas as gpd
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
+
+# Write the data to a Shapefile (blocks)
+all_blocks.to_file('SHP files/all_blocks/all_blocks.shp')
+# Create a ZIP file containing all the Shapefile files
+with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
+    for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
+        filename = 'SHP files/all_blocks{}'.format(ext)
+        if os.path.exists(filename):
+            zip.write(filename)
+
+
+# Write the data to a Shapefile (wells)
+all_blocks.to_file('SHP files/all_wells/all_wells.shp')
+# Create a ZIP file containing all the Shapefile files
+with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
+    for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
+        filename = 'SHP files/wells{}'.format(ext)
+        if os.path.exists(filename):
+            zip.write(filename)
 
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -43,8 +63,9 @@ app.layout = html.Section([
                     zIndex=999,
                     overlayOpacity=0,
                     className='drawer-class',
+                    padding='20px',
                     transition='slide-right',
-                    transitionDuration=500,
+                    transitionDuration=300,
                     
                     children=[
                          html.Div(
@@ -102,7 +123,7 @@ app.layout = html.Section([
                                         html.H5('Request permission to use'),
                                         html.P('No License'),
 
-                                        dmc.Button('View full details', variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='material-symbols:picture-as-pdf-outline',width=25), 
+                                        dmc.Button('View full details', id='PDF_Button',variant='outline',color='dark',radius='10px',leftIcon=DashIconify(icon='material-symbols:picture-as-pdf-outline',width=25), 
                                         style={'marginTop':30, 'marginBottom':30})
                                 ]),
                                 value="info"),
@@ -227,8 +248,8 @@ app.layout = html.Section([
                                                         dmc.MultiSelect(
                                                             placeholder="Select Borehole Name",
                                                             id="multiselect-borehole",
-                                                            value=['test1'],
-                                                            data=['test1','test2'],
+                                                            value=all_wells['Well_Name'].unique().tolist(),
+                                                            data=all_wells['Well_Name'].unique().tolist(),
                                                             style={'marginTop':10},
                                                             clearable=True,
                                                             searchable=True,
@@ -322,7 +343,8 @@ app.layout = html.Section([
                                     children=[
                                         dmc.Paper(
                                             children=[
-                                                html.H4('Blocks', style={'marginTop':5, 'paddingLeft':10}),
+                                                html.H4('Block', style={'marginTop':5, 'paddingLeft':10}),
+                                                html.P('A download section for block coordinates and information', style={'marginTop':5, 'marginLeft':10}),
                                                 dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                                 dcc.Download(id='download_csv_df'),
                                                 html.Br(),
@@ -340,7 +362,8 @@ app.layout = html.Section([
 
                                         dmc.Paper(
                                             children=[
-                                            html.H4('Wells', style={'marginTop':5, 'marginLeft':10}),
+                                            html.H4('Well', style={'marginTop':5, 'marginLeft':10}),
+                                            html.P('A download section for wellbore coordinates and information', style={'marginTop':5, 'marginLeft':10}),
                                             dmc.Button('Download data as CSV', id='CSV-button2', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                             dcc.Download(id='download_csv_df2'),
                                             html.Br(),
@@ -433,17 +456,19 @@ def set_well_option(chosen_orientation, chosen_status, chosen_purpose, chosen_ty
     Input('reset-block','n_clicks')
 )
 
-def reset_filter_block(clicked):
-    
-    reset_df = all_blocks[(all_blocks['num_wells'].between(all_blocks['num_wells'].min(), all_blocks['num_wells'].max())) & (all_blocks['sq_km'].between(all_blocks['sq_km'].min(), all_blocks['sq_km'].max())) & (all_blocks['est_reserve'].between(all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max())) & (all_blocks['Status'].isin(all_blocks['Status'])) & (all_blocks['Operator'].isin(all_blocks['Operator']))]
-    reset_block_name = pd.unique(reset_df['Block_Name'].to_list())
-    reset_num_blocks = reset_df['num_wells'].min(), reset_df['num_wells'].max()
-    reset_km_blocks = reset_df['sq_km'].min(), reset_df['sq_km'].max()
-    reset_reserve_blocks = reset_df['est_reserve'].min(), reset_df['est_reserve'].max()
-    reset_status_blocks = ['Exploration','Development','Production','Abandoned']
-    reset_operator_blocks = pd.unique(reset_df['Operator'].to_list())
-    
-    return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
+def reset_filter_block(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        reset_df = all_blocks[(all_blocks['num_wells'].between(all_blocks['num_wells'].min(), all_blocks['num_wells'].max())) & (all_blocks['sq_km'].between(all_blocks['sq_km'].min(), all_blocks['sq_km'].max())) & (all_blocks['est_reserve'].between(all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max())) & (all_blocks['Status'].isin(all_blocks['Status'])) & (all_blocks['Operator'].isin(all_blocks['Operator']))]
+        reset_block_name = pd.unique(reset_df['Block_Name'].to_list())
+        reset_num_blocks = reset_df['num_wells'].min(), reset_df['num_wells'].max()
+        reset_km_blocks = reset_df['sq_km'].min(), reset_df['sq_km'].max()
+        reset_reserve_blocks = reset_df['est_reserve'].min(), reset_df['est_reserve'].max()
+        reset_status_blocks = ['Exploration','Development','Production','Abandoned']
+        reset_operator_blocks = pd.unique(reset_df['Operator'].to_list())
+        
+        return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
 
 @app.callback(
     Output('multiselect-borehole','value'),
@@ -454,16 +479,18 @@ def reset_filter_block(clicked):
     Input('reset_well','n_clicks')
 )
 
-def reset_filter_well(clicked):
-    
-    reset_df = all_wells[(all_wells['Well_Orientation'].isin(all_wells['Well_Orientation'])) & (all_wells['Well_Status'].isin(all_wells['Well_Status'])) & (all_wells['Well_Purpose'].isin(all_wells['Well_Purpose'])) & (all_wells['Well_Type'].isin(all_wells['Well_Type']))]
-    reset_well_name = pd.unique(reset_df['Well_Name'].to_list())
-    reset_orient = ['Vertical', 'Horizontal', 'Directional']
-    reset_status = ['Active', 'Inactive','Shut-in','Suspended','Abandoned']
-    reset_purpose = ['Exploration','Production','Appraisal','Injection','Monitoring','Abandonment']
-    reset_type = ['Oil','Gas','Water','Observation']
-    
-    return reset_well_name, reset_orient, reset_status, reset_purpose, reset_type
+def reset_filter_well(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        reset_df = all_wells[(all_wells['Well_Orientation'].isin(all_wells['Well_Orientation'])) & (all_wells['Well_Status'].isin(all_wells['Well_Status'])) & (all_wells['Well_Purpose'].isin(all_wells['Well_Purpose'])) & (all_wells['Well_Type'].isin(all_wells['Well_Type']))]
+        reset_well_name = pd.unique(reset_df['Well_Name'].to_list())
+        reset_orient = ['Vertical', 'Horizontal', 'Directional']
+        reset_status = ['Active', 'Inactive','Shut-in','Suspended','Abandoned']
+        reset_purpose = ['Exploration','Production','Appraisal','Injection','Monitoring','Abandonment']
+        reset_type = ['Oil','Gas','Water','Observation']
+        
+        return reset_well_name, reset_orient, reset_status, reset_purpose, reset_type
 
 @app.callback(
     Output('output-map','children'),
@@ -559,7 +586,9 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
-    
+
+# Create the download buttons for block datasets
+
 @app.callback(
     Output('download_csv_df', 'data'),
     Input('CSV-button', 'n_clicks'),
@@ -567,7 +596,10 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
 )
 
 def generate_csv(n_clicks):
-    return dcc.send_data_frame(all_blocks.to_csv, "MyCSV_Data.csv")
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        return dcc.send_data_frame(all_blocks.to_csv, "MyCSV_Blocks.csv")
 
 @app.callback(
     Output('download_geojson_df','data'),
@@ -575,10 +607,13 @@ def generate_csv(n_clicks):
     prevent_initial_call=True
 )
 def generate_geojson(n_clicks):
-    # Read the generated JSON file and send it as bytes
-    with open('GeoJSON files/blocks.geojson', 'r') as file:
-        data = file.read()
-    return dcc.send_bytes(data.encode(), "MyGeoJSON_Data.json")
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # Read the generated JSON file and send it as bytes
+        with open('GeoJSON files/blocks.geojson', 'r') as file:
+            data = file.read()
+        return dcc.send_bytes(data.encode(), "MyGeoJSON_Blocks.json")
 
 @app.callback(
     Output('download_shp_df','data'),
@@ -587,20 +622,57 @@ def generate_geojson(n_clicks):
 )
 
 def generate_shp(n_clicks):
-    # Write the data to a Shapefile
-    all_blocks.to_file('SHP files/all_blocks.shp')
-    
-    # Create a ZIP file containing all the Shapefile files
-    with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
-        for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
-            filename = 'SHP files/all_blocks{}'.format(ext)
-            if os.path.exists(filename):
-                zip.write(filename)
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # Read the generated Shapefile and send it as bytes
+        with open('SHP zipfile/all_blocks.zip', 'rb') as file:
+            data = file.read()
+        return dcc.send_bytes(data, "MySHP_Blocks.zip")
 
-    # Read the generated Shapefile and send it as bytes
-    with open('SHP zipfile/all_blocks.zip', 'rb') as file:
-        data = file.read()
-    return dcc.send_bytes(data, "MySHP_Data.zip")
+#create the download button for well datasets
+
+@app.callback(
+    Output('download_csv_df2', 'data'),
+    Input('CSV-button2', 'n_clicks'),
+    prevent_initial_call=True
+)
+
+def generate_csv(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        return dcc.send_data_frame(all_wells.to_csv, "MyCSV_Wells.csv")
+
+@app.callback(
+    Output('download_geojson_df2','data'),
+    Input('GeoJSON-button2','n_clicks'),
+    prevent_initial_call=True
+)
+def generate_geojson(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # Read the generated JSON file and send it as bytes
+        with open('GeoJSON files/wells.geojson', 'r') as file:
+            data = file.read()
+        return dcc.send_bytes(data.encode(), "MyGeoJSON_Wells.json")
+
+@app.callback(
+    Output('download_shp_df2','data'),
+    Input('SHP-button2','n_clicks'),
+    prevent_initial_call=True
+)
+
+def generate_shp(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # Read the generated Shapefile and send it as bytes
+        with open('SHP zipfile/wells.zip', 'rb') as file:
+            data = file.read()
+        return dcc.send_bytes(data, "MySHP_Wells.zip")
+
 
 @app.callback(
     Output("drawer", "opened"),
