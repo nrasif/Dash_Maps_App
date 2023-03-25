@@ -38,6 +38,12 @@ with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
         filename = 'SHP files/wells{}'.format(ext)
         if os.path.exists(filename):
             zip.write(filename)
+            
+layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','dark'],
+             ['Dark','https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','dark'],
+             ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
+             ['Street Map','https://tile.openstreetmap.org/{z}/{x}/{y}.png','dark'],
+             ['Ocean Base','https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}','dark']]
 
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -134,17 +140,44 @@ app.layout = html.Section([
                                     children=[
                                         
                                         dmc.Accordion(
-                                            value='block_filter_val',
+                                            value='map_filter_val',
                                             style={'marginTop':30},
+                                            radius=10,
+                                            children=[dmc.AccordionItem(
+                                                [
+                                                    dmc.AccordionControl('Map Settings', icon=DashIconify(icon='ic:twotone-map', width=20)),
+                                                    dmc.AccordionPanel(
+                                                        html.Div(
+                                                            className='accordion-content',
+                                                            children=[
+                                                                html.H5('Select your favorite layout map', style={'marginTop':10}),
+                                                                dmc.RadioGroup(
+                                                                    [dmc.Radio(i, value=k, color=c) for i, k, c in layout_data],
+                                                                    id='map_layout',
+                                                                    value='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                                                                    orientation='vertical',
+                                                                    spacing='xs',
+                                                                    style={'marginBottom':20}
+                                                                )
+                                                            ]
+                                                        )
+                                                    )
+                                                ],value='map_filter_val'
+                                            )], variant='contained'
+                                        ),
+                                        
+                                        dmc.Accordion(
+                                            value='block_filter_val',
+                                            style={'marginTop':10},
                                             radius=10,
                                             children=[dmc.AccordionItem(
                                                 [
                                                     dmc.AccordionControl('Block Filter', icon=DashIconify(icon='mdi:surface-area',width=20)),
                                                     dmc.AccordionPanel(
                                                         html.Div(
-                                                            className='accordion-content',
+                                                            className='accordion-content2',
                                                             children=[
-                                                                html.H5('Block Name', style={'marginTop':20}),
+                                                                html.H5('Block Name', style={'marginTop':10}),
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Block Name",
                                                                     id="multiselect-block",
@@ -242,9 +275,9 @@ app.layout = html.Section([
                                                     dmc.AccordionControl('Well Filter', icon=DashIconify(icon='material-symbols:pin-drop-outline',width=20)),
                                                     dmc.AccordionPanel(
                                                         html.Div(
-                                                            className='accordion_content2',
+                                                            className='accordion_content3',
                                                             children=[
-                                                        html.H5('Well Name', style={'marginTop':20}),
+                                                        html.H5('Well Name', style={'marginTop':10}),
                                                         dmc.MultiSelect(
                                                             placeholder="Select Borehole Name",
                                                             id="multiselect-borehole",
