@@ -47,9 +47,19 @@ layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/service
                ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
                ['Street Map','https://tile.openstreetmap.org/{z}/{x}/{y}.png','dark']]
 
+def get_info_block(feature=None):
+    if not feature:
+        return None
+    return ["Block Name: ", html.B(feature["properties"]["Block_Name"]), html.Br(),
+            "Status: ", html.B(feature["properties"]["Status"]), html.Br(),
+            "Operator: ", html.B(feature["properties"]["Operator"]), html.Br(),
+            "Number of Wells: ", html.B(feature["properties"]["num_wells"]), html.Br(),
+            "Area: ", html.B(feature["properties"]["sq_km"])," Km", html.Sup("2"),
+            "Estimated Reserve: ", html.B(feature["properties"]["est_reserve"])," gal"
+            ]
 # -------------------------------------Dash Apps----------------------------------------
 
-app = Dash(__name__, meta_tags=[
+app = Dash(__name__, suppress_callback_exceptions=True, meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ])
 
@@ -432,6 +442,8 @@ app.layout = html.Section([
     className='content2',
     id='output-map'
 ),
+    html.Div(children=get_info_block(), id="info_block", className="info",
+            style={"position": "absolute", "bottom": "30px", "right": "10px", "z-index": "1000"}),
 
     html.Div(
         className='dashboard-content',
@@ -625,7 +637,11 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
-    
+
+@app.callback(Output("info_block", "children"), [Input("block_load", "click_feature")])
+def click_info_block(feature):
+    return get_info_block(feature)
+
 # Create the download buttons for block datasets
 
 @app.callback(
