@@ -141,3 +141,20 @@ body {
 .table3-content p{
     font-size: 12px;
 }
+
+.info{
+    position: absolute;
+    top: 12px;
+    left: 180px;
+    width: 15%;
+    height: 20%;
+    z-index: 2;
+}
+
+.info H4{
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 25px;
+    font-family: 'Ubuntu', sans-serif;
+    color: #3F72AF;
+}

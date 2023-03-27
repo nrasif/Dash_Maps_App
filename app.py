@@ -50,12 +50,23 @@ layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/service
 def get_info_block(feature=None):
     if not feature:
         return None
-    return ["Block Name: ", html.B(feature["properties"]["Block_Name"]), html.Br(),
-            "Status: ", html.B(feature["properties"]["Status"]), html.Br(),
-            "Operator: ", html.B(feature["properties"]["Operator"]), html.Br(),
-            "Number of Wells: ", html.B(feature["properties"]["num_wells"]), html.Br(),
-            "Area: ", html.B(feature["properties"]["sq_km"])," Km", html.Sup("2"),
-            "Estimated Reserve: ", html.B(feature["properties"]["est_reserve"])," gal"
+    return [
+        html.H4(feature['properties']['Block_Name'],
+        style={
+            'margin-top': '10px',
+            'padding': '10px',
+            'font-size': '25px',
+            'font-family': 'Ubuntu, sans-serif',
+            'color': '#3F72AF'
+            }),
+        
+        dmc.Table([
+            html.Tr([html.Th('Status', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['Status'])]),
+            html.Tr([html.Th('Operator', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['Operator'])]),
+            html.Tr([html.Th('Number of Wells', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['num_wells'])]),
+            html.Tr([html.Th('Area in Sq.Km', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['sq_km'])]),
+            html.Tr([html.Th('Reserve Est', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['est_reserve'])]),
+            ]),
             ]
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -442,8 +453,7 @@ app.layout = html.Section([
     className='content2',
     id='output-map'
 ),
-    html.Div(children=get_info_block(), id="info_block", className="info",
-            style={"position": "absolute", "bottom": "30px", "right": "10px", "z-index": "1000"}),
+    html.Div(children=get_info_block(), id="info_block", className="info"),
 
     html.Div(
         className='dashboard-content',
@@ -638,9 +648,16 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'float':'right'
                     })
 
-@app.callback(Output("info_block", "children"), [Input("block_load", "click_feature")])
+@app.callback(
+    Output("info_block", "children"),
+    Output("info_block", 'style'),
+    Input("block_load", "click_feature")
+    )
 def click_info_block(feature):
-    return get_info_block(feature)
+    if feature is None:
+        return None, {'display':'none'}
+    else:
+        return get_info_block(feature), {'display':'block', 'border-radius':'15px'}
 
 # Create the download buttons for block datasets
 
