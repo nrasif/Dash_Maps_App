@@ -543,13 +543,15 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     
     layer_blocks = dl.GeoJSON(id='block_load',
                             data=json.loads(edited_layer.to_json()),
-                            hoverStyle=arrow_function(dict(weight=6, fillColor='#45b6fe', fillOpacity=0.5)),
-                            options=dict(style={'color':'#3a9bdc',
-                                        'weight':2,
-                                        'dashArray':'30, 10',
-                                        'dashOffset':'1',
-                                        'opacity':1,
-                                        }))
+                            hoverStyle=arrow_function(dict(weight=5, fillColor='#45b6fe', fillOpacity=0.5, color='black', dashArray='')),
+                            options=dict(style={
+                                                'color':'black',
+                                                'weight':3,
+                                                'dashArray':'30 10',
+                                                'dashOffset':'5',
+                                                'opacity':1,
+                                                'fillColor':'#3a9bdc'
+                                                }))
     bounds = edited_layer.total_bounds
     x = mean([bounds[0], bounds[2]])
     y = mean([bounds[1], bounds[3]])
