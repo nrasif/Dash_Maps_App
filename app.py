@@ -623,15 +623,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
-
-def generate_popup(feature):
-    return dmc.Paper(id='paper-test',
-                    children=[
-                        html.H4(all_blocks['Block_Name'].iloc[0]),
-                        html.P('Status : ' + all_blocks['Status'].iloc[0], style={'marginTop':'20px'})
-                        ],
-                    radius='10px')
-
+    
 # Create the download buttons for block datasets
 
 @app.callback(
