@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import dash_leaflet as dl
-from dash_extensions.javascript import arrow_function
+from dash_extensions.javascript import arrow_function, assign
 from dash.exceptions import PreventUpdate
 
 from statistics import mean
@@ -20,6 +20,9 @@ import geopandas as gpd
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
+all_blocks['tooltip'] = all_blocks['Block_Name']
+all_wells['tooltip'] = all_wells['Well_Name']
+
 # Write the data to a Shapefile (blocks)
 all_blocks.to_file('SHP files/all_blocks/all_blocks.shp')
 # Create a ZIP file containing all the Shapefile files
@@ -31,7 +34,7 @@ with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
 
 
 # Write the data to a Shapefile (wells)
-all_blocks.to_file('SHP files/all_wells/all_wells.shp')
+all_wells.to_file('SHP files/all_wells/all_wells.shp')
 # Create a ZIP file containing all the Shapefile files
 with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
     for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
@@ -40,10 +43,9 @@ with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
             zip.write(filename)
             
 layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','dark'],
-             ['Dark','https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','dark'],
-             ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
-             ['Street Map','https://tile.openstreetmap.org/{z}/{x}/{y}.png','dark'],
-             ['Ocean Base','https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}','dark']]
+               ['Dark','https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','dark'],
+               ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
+               ['Street Map','https://tile.openstreetmap.org/{z}/{x}/{y}.png','dark']]
 
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -145,12 +147,12 @@ app.layout = html.Section([
                                             radius=10,
                                             children=[dmc.AccordionItem(
                                                 [
-                                                    dmc.AccordionControl('Map Settings', icon=DashIconify(icon='ic:twotone-map', width=20)),
+                                                    dmc.AccordionControl('Map Settings', icon=DashIconify(icon='ic:twotone-map', width=25)),
                                                     dmc.AccordionPanel(
                                                         html.Div(
                                                             className='accordion-content',
                                                             children=[
-                                                                html.H5('Select your favorite layout map', style={'marginTop':10}),
+                                                                html.H5('Layout map', style={'marginTop':10}),
                                                                 dmc.RadioGroup(
                                                                     [dmc.Radio(i, value=k, color=c) for i, k, c in layout_data],
                                                                     id='map_layout',
@@ -430,6 +432,7 @@ app.layout = html.Section([
     className='content2',
     id='output-map'
 ),
+
     html.Div(
         className='dashboard-content',
         children=[
@@ -530,22 +533,23 @@ def reset_filter_well(n_clicks):
     Input('multiselect-block','value'),
     Input('multiselect-block','data'),
     Input('multiselect-borehole','value'),
-    Input('multiselect-borehole','data')
+    Input('multiselect-borehole','data'),
+    Input('map_layout','value')
 )
 
-def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, well_submitted_data):
+def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, well_submitted_data, layout_map):
     edited_layer= all_blocks[(all_blocks['Block_Name'].isin(block_submitted_value)) & (all_blocks['Block_Name'].isin(block_submitted_data))]
     edited_point = all_wells[(all_wells['Well_Name'].isin(well_submitted_value)) & (all_wells['Well_Name'].isin(well_submitted_data))]
     
     layer_blocks = dl.GeoJSON(id='block_load',
                             data=json.loads(edited_layer.to_json()),
-                            hoverStyle=arrow_function(dict(weight=6, fillColor='#3F72AF')),
-                            options=dict(style=dict(color='#ADD8E6', 
-                                        weight=2, 
-                                        dashArray='30, 10',
-                                        dashOffset='1',
-                                        opacity=1,
-                                        )))
+                            hoverStyle=arrow_function(dict(weight=6, fillColor='#45b6fe', fillOpacity=0.5)),
+                            options=dict(style={'color':'#3a9bdc',
+                                        'weight':2,
+                                        'dashArray':'30, 10',
+                                        'dashOffset':'1',
+                                        'opacity':1,
+                                        }))
     bounds = edited_layer.total_bounds
     x = mean([bounds[0], bounds[2]])
     y = mean([bounds[1], bounds[3]])
@@ -560,10 +564,10 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     
     if edited_layer.empty and edited_point.empty:
         # Generate map without polygons and points
-        return dl.Map(children=[dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+        return dl.Map(children=[dl.TileLayer(url=layout_map),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
-                                        activeColor="#214097", completedColor="#972158")],
+                                        activeColor="#C29200", completedColor="#972158")],
                         center=[5.3, 96.3],
                         zoom=11,
                         style={
@@ -575,7 +579,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     elif edited_layer.empty:
         #Generate map without polygons
         return dl.Map(children=[dl.GeoJSON(layer_well),
-                        dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+                        dl.TileLayer(url=layout_map),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
@@ -589,8 +593,8 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         })
     elif edited_point.empty:
         #Generate map without points
-        return dl.Map(children=[dl.GeoJSON(layer_blocks),
-                        dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
+        return dl.Map(children=[dl.GeoJSON(layer_blocks, id='layer_blocks'),
+                        dl.TileLayer(url=layout_map),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
@@ -604,9 +608,9 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                             'float':'right'
                         })
         
-    return dl.Map(children=[dl.GeoJSON(layer_blocks),
+    return dl.Map(children=[dl.GeoJSON(layer_blocks, id='layer_blocks'),
                     dl.GeoJSON(layer_well),
-                    dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'), 
+                    dl.TileLayer(url=layout_map),
                     dl.GestureHandling(),
                     dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                     activeColor="#C29200", completedColor="#972158")],
@@ -619,6 +623,14 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
+
+def generate_popup(feature):
+    return dmc.Paper(id='paper-test',
+                    children=[
+                        html.H4(all_blocks['Block_Name'].iloc[0]),
+                        html.P('Status : ' + all_blocks['Status'].iloc[0], style={'marginTop':'20px'})
+                        ],
+                    radius='10px')
 
 # Create the download buttons for block datasets
 
