@@ -1,5 +1,5 @@
 import dash
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, ctx
 from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -68,17 +68,6 @@ def get_info_block(feature=None):
             html.Tr([html.Th('Area in Sq.Km', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['sq_km'])]),
             html.Tr([html.Th('Reserve Est', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['est_reserve'])]),
             ]),
-        
-        dmc.ActionIcon(DashIconify(icon='material-symbols:close', width=20),
-                        size='lg',
-                        variant='transparent',
-                        id='close-popup1',
-                        radius='10px',
-                        style={
-                            'position':'absolute',
-                            'top':'5px',
-                            'right':'5px',
-                        })
             ]
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -411,7 +400,7 @@ app.layout = html.Section([
                                     children=[
                                         dmc.Paper(
                                             children=[
-                                                html.H4('Block', style={'marginTop':5, 'paddingLeft':10}),
+                                                html.H4('Block Dataset', style={'marginTop':5, 'paddingLeft':10}),
                                                 html.P('A download section for block coordinates and information', style={'marginTop':5, 'marginLeft':10}),
                                                 dmc.Button('Download data as CSV', id='CSV-button', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                                 dcc.Download(id='download_csv_df'),
@@ -430,7 +419,7 @@ app.layout = html.Section([
 
                                         dmc.Paper(
                                             children=[
-                                            html.H4('Well', style={'marginTop':5, 'marginLeft':10}),
+                                            html.H4('Well Dataset', style={'marginTop':5, 'marginLeft':10}),
                                             html.P('A download section for wellbore coordinates and information', style={'marginTop':5, 'marginLeft':10}),
                                             dmc.Button('Download data as CSV', id='CSV-button2', variant='outline',color='dark',radius='10px', leftIcon=DashIconify(icon='ph:file-csv',width=25),style={'marginTop':25, 'marginLeft':10}),
                                             dcc.Download(id='download_csv_df2'),
@@ -466,6 +455,17 @@ app.layout = html.Section([
     id='output-map'
 ),
     html.Div(children=get_info_block(), id="info_block", className="info"),
+    
+    dmc.Button('Close Popup',leftIcon=DashIconify(icon='material-symbols:close', width=20),
+                size='xs',
+                variant='default',
+                id='close_popup1',
+                radius='2px',
+                style={
+                    'position':'absolute',
+                    'top':'12px',
+                    'left':'165px',
+                }),
 
     html.Div(
         className='dashboard-content',
@@ -660,10 +660,11 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'float':'right'
                     })
 #Create the popup for Blocks
+
 @app.callback(
     Output("info_block", "children"),
     Output("info_block", 'style'),
-    Input("block_load", "click_feature")
+    Input("block_load", "click_feature"),
     )
 def click_info_block(feature):
     if feature is None:
@@ -671,8 +672,17 @@ def click_info_block(feature):
     else:
         return get_info_block(feature), {'display':'block', 'border-radius':'15px','opacity':1,'transition':'opacity 0.2s ease-in-out'}
 
-# Create the download buttons for block datasets
+# @app.callback(
+#     Output('info_block','style'),
+#     Input("close_popup1","n_clicks")
+# )
+# def close_popup_blocks(n_clicks):
+#     if n_clicks is None:
+#         raise PreventUpdate
+#     else:
+#         return {'opacity':0, 'pointer-events':'none', 'transition':'opacity 0.2s ease-in-out'}
 
+# Create the download buttons for block datasets
 @app.callback(
     Output('download_csv_df', 'data'),
     Input('CSV-button', 'n_clicks'),
