@@ -54,6 +54,7 @@ def get_info_block(feature=None):
         html.H4(feature['properties']['Block_Name'],
         style={
             'margin-top': '10px',
+            'margin-bottom':'10px',
             'padding': '10px',
             'font-size': '25px',
             'font-family': 'Ubuntu, sans-serif',
@@ -61,12 +62,23 @@ def get_info_block(feature=None):
             }),
         
         dmc.Table([
-            html.Tr([html.Th('Status', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['Status'])]),
-            html.Tr([html.Th('Operator', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['Operator'])]),
-            html.Tr([html.Th('Number of Wells', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['num_wells'])]),
-            html.Tr([html.Th('Area in Sq.Km', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['sq_km'])]),
-            html.Tr([html.Th('Reserve Est', style={'text-align':'left', 'width':'50%'}), html.Td(feature['properties']['est_reserve'])]),
+            html.Tr([html.Th('Status', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['Status'])]),
+            html.Tr([html.Th('Operator', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['Operator'])]),
+            html.Tr([html.Th('Number of Wells', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['num_wells'])]),
+            html.Tr([html.Th('Area in Sq.Km', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['sq_km'])]),
+            html.Tr([html.Th('Reserve Est', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['est_reserve'])]),
             ]),
+        
+        dmc.ActionIcon(DashIconify(icon='material-symbols:close', width=20),
+                        size='lg',
+                        variant='transparent',
+                        id='close-popup1',
+                        radius='10px',
+                        style={
+                            'position':'absolute',
+                            'top':'5px',
+                            'right':'5px',
+                        })
             ]
 # -------------------------------------Dash Apps----------------------------------------
 
@@ -647,7 +659,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
-
+#Create the popup for Blocks
 @app.callback(
     Output("info_block", "children"),
     Output("info_block", 'style'),
@@ -655,9 +667,9 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     )
 def click_info_block(feature):
     if feature is None:
-        return None, {'display':'none'}
+        return None, {'opacity':0, 'pointer-events':'none'}
     else:
-        return get_info_block(feature), {'display':'block', 'border-radius':'15px'}
+        return get_info_block(feature), {'display':'block', 'border-radius':'15px','opacity':1,'transition':'opacity 0.2s ease-in-out'}
 
 # Create the download buttons for block datasets
 
