@@ -158,3 +158,21 @@ body {
     font-family: 'Ubuntu', sans-serif;
     color: #3F72AF;
 }
+
+.leaflet-popup-content-wrapper{
+    width: 300px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+.data-cell-left{
+    color: #151515;
+}
+
+.data-cell-right{
+    background-color: #ebf2f7;
+    padding-left: 10px;
+}

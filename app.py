@@ -20,8 +20,39 @@ import geopandas as gpd
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
+
 all_blocks['tooltip'] = all_blocks['Block_Name']
+all_blocks['popup'] = '''
+<strong><H4 style="margin-top:20px; margin-bottom:15px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
+''' + all_blocks['Block_Name'] + '</H4></strong>' + '<br>' + """
+
+
+<table style="height: 50px; width: 250px;">
+    <tbody>
+    <tr>
+    <th class="data-cell-left"><strong>Status</strong></th>
+    <td class="data-cell-right"> """ + all_blocks['Status'] + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Operator</strong></th>
+    <td class="data-cell-right"> """ + all_blocks['Operator'] + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Number of Wells</strong></th>
+    <td class="data-cell-right"> """ + all_blocks['num_wells'].map(str) + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Area</strong></th>
+    <td class="data-cell-right"> """ + all_blocks['sq_km'].map(str) + """ km<sup>2</sup></td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Reserve Estimation</strong></th>
+    <td class="data-cell-right"> """ + all_blocks['est_reserve'].map(str) + """ MMbbl</td>
+    """
+
+
 all_wells['tooltip'] = all_wells['Well_Name']
+all_wells['popup'] = 'test'
 
 # Write the data to a Shapefile (blocks)
 all_blocks.to_file('SHP files/all_blocks/all_blocks.shp')
@@ -47,29 +78,7 @@ layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/service
                ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
                ['Street Map','https://tile.openstreetmap.org/{z}/{x}/{y}.png','dark']]
 
-def get_info_block(feature=None):
-    if not feature:
-        return None
-    return [
-        html.H4(feature['properties']['Block_Name'],
-        style={
-            'margin-top': '10px',
-            'margin-bottom':'10px',
-            'padding': '10px',
-            'font-size': '25px',
-            'font-family': 'Ubuntu, sans-serif',
-            'color': '#3F72AF'
-            }),
-        
-        dmc.Table([
-            html.Tr([html.Th('Status', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['Status'])]),
-            html.Tr([html.Th('Operator', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['Operator'])]),
-            html.Tr([html.Th('Number of Wells', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['num_wells'])]),
-            html.Tr([html.Th('Area in Sq.Km', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['sq_km'])]),
-            html.Tr([html.Th('Reserve Est', style={'text-align':'left', 'width':'60%','paddingLeft':'13px'}), html.Td(feature['properties']['est_reserve'])]),
-            ]),
-            ]
-# -------------------------------------Dash Apps----------------------------------------
+#----------------------------Dash Apps----------------------------------------
 
 app = Dash(__name__, suppress_callback_exceptions=True, meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
@@ -454,18 +463,6 @@ app.layout = html.Section([
     className='content2',
     id='output-map'
 ),
-    html.Div(children=get_info_block(), id="info_block", className="info"),
-    
-    dmc.Button('Close Popup',leftIcon=DashIconify(icon='material-symbols:close', width=20),
-                size='xs',
-                variant='default',
-                id='close_popup1',
-                radius='2px',
-                style={
-                    'position':'absolute',
-                    'top':'12px',
-                    'left':'165px',
-                }),
 
     html.Div(
         className='dashboard-content',
@@ -659,29 +656,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
                         'marginLeft':'20px',
                         'float':'right'
                     })
-#Create the popup for Blocks
-
-@app.callback(
-    Output("info_block", "children"),
-    Output("info_block", 'style'),
-    Input("block_load", "click_feature"),
-    )
-def click_info_block(feature):
-    if feature is None:
-        return None, {'opacity':0, 'pointer-events':'none'}
-    else:
-        return get_info_block(feature), {'display':'block', 'border-radius':'15px','opacity':1,'transition':'opacity 0.2s ease-in-out'}
-
-# @app.callback(
-#     Output('info_block','style'),
-#     Input("close_popup1","n_clicks")
-# )
-# def close_popup_blocks(n_clicks):
-#     if n_clicks is None:
-#         raise PreventUpdate
-#     else:
-#         return {'opacity':0, 'pointer-events':'none', 'transition':'opacity 0.2s ease-in-out'}
-
+    
 # Create the download buttons for block datasets
 @app.callback(
     Output('download_csv_df', 'data'),
