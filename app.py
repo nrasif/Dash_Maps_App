@@ -23,8 +23,10 @@ all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
 all_blocks['tooltip'] = all_blocks['Block_Name']
 all_blocks['popup'] = '''
-<strong><H4 style="margin-top:20px; margin-bottom:15px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
-''' + all_blocks['Block_Name'] + '</H4></strong>' + '<br>' + """
+
+
+<strong><H4 style="margin-top:10px; margin-bottom:20px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
+''' + all_blocks['Block_Name'] + '</H4></strong>' + """
 
 
 <table style="height: 50px; width: 250px;">
@@ -48,11 +50,37 @@ all_blocks['popup'] = '''
     <tr>
     <th class="data-cell-left"><strong>Reserve Estimation</strong></th>
     <td class="data-cell-right"> """ + all_blocks['est_reserve'].map(str) + """ MMbbl</td>
+    </tr>
     """
 
 
 all_wells['tooltip'] = all_wells['Well_Name']
-all_wells['popup'] = 'test'
+all_wells['popup'] = '''
+
+
+<strong><H4 style="margin-top:10px; margin-bottom:20px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
+''' + all_wells['Well_Name'] + '</H4></strong>' + """
+
+
+<table style="height: 50px; width: 250px;">
+    <tbody>
+    <tr>
+    <th class="data-cell-left"><strong>Orientation</strong></th>
+    <td class="data-cell-right"> """ + all_wells['Well_Orientation'] + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Status</strong></th>
+    <td class="data-cell-right"> """ + all_wells['Well_Status'] + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Purpose</strong></th>
+    <td class="data-cell-right"> """ + all_wells['Well_Purpose'] + """</td>
+    </tr>
+    <tr>
+    <th class="data-cell-left"><strong>Area</strong></th>
+    <td class="data-cell-right"> """ + all_wells['Well_Type'] + """</td>
+    </tr>
+    """
 
 # Write the data to a Shapefile (blocks)
 all_blocks.to_file('SHP files/all_blocks/all_blocks.shp')
