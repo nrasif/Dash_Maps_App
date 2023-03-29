@@ -21,27 +21,27 @@ all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
 
-all_blocks['tooltip'] = all_blocks['Block_Name']
+all_blocks['tooltip'] = all_blocks['name']
 all_blocks['popup'] = '''
 
 
 <strong><H4 style="margin-top:10px; margin-bottom:20px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
-''' + all_blocks['Block_Name'] + '</H4></strong>' + """
+''' + all_blocks['name'] + '</H4></strong>' + """
 
 
 <table style="height: 50px; width: 250px;">
     <tbody>
     <tr>
     <th class="data-cell-left"><strong>Status</strong></th>
-    <td class="data-cell-right"> """ + all_blocks['Status'] + """</td>
+    <td class="data-cell-right"> """ + all_blocks['status'] + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Operator</strong></th>
-    <td class="data-cell-right"> """ + all_blocks['Operator'] + """</td>
+    <td class="data-cell-right"> """ + all_blocks['operator'] + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Number of Wells</strong></th>
-    <td class="data-cell-right"> """ + all_blocks['num_wells'].map(str) + """</td>
+    <td class="data-cell-right"> """ + all_blocks['num_well'].map(str) + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Area</strong></th>
@@ -49,36 +49,36 @@ all_blocks['popup'] = '''
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Reserve Estimation</strong></th>
-    <td class="data-cell-right"> """ + all_blocks['est_reserve'].map(str) + """ MMbbl</td>
+    <td class="data-cell-right"> """ + all_blocks['reserve'].map(str) + """ MMbbl</td>
     </tr>
     """
 
 
-all_wells['tooltip'] = all_wells['Well_Name']
+all_wells['tooltip'] = all_wells['name']
 all_wells['popup'] = '''
 
 
 <strong><H4 style="margin-top:10px; margin-bottom:20px; font-family:Ubuntu, sans-serif; font-size: 25px; color:#3F72AF;">
-''' + all_wells['Well_Name'] + '</H4></strong>' + """
+''' + all_wells['name'] + '</H4></strong>' + """
 
 
 <table style="height: 50px; width: 250px;">
     <tbody>
     <tr>
     <th class="data-cell-left"><strong>Orientation</strong></th>
-    <td class="data-cell-right"> """ + all_wells['Well_Orientation'] + """</td>
+    <td class="data-cell-right"> """ + all_wells['orient'] + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Status</strong></th>
-    <td class="data-cell-right"> """ + all_wells['Well_Status'] + """</td>
+    <td class="data-cell-right"> """ + all_wells['status'] + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Purpose</strong></th>
-    <td class="data-cell-right"> """ + all_wells['Well_Purpose'] + """</td>
+    <td class="data-cell-right"> """ + all_wells['purpose'] + """</td>
     </tr>
     <tr>
     <th class="data-cell-left"><strong>Area</strong></th>
-    <td class="data-cell-right"> """ + all_wells['Well_Type'] + """</td>
+    <td class="data-cell-right"> """ + all_wells['type'] + """</td>
     </tr>
     """
 
@@ -242,8 +242,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Block Name",
                                                                     id="multiselect-block",
-                                                                    value=all_blocks['Block_Name'].unique().tolist(),
-                                                                    data=all_blocks['Block_Name'].unique().tolist(),
+                                                                    value=all_blocks['name'].unique().tolist(),
+                                                                    data=all_blocks['name'].unique().tolist(),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -267,8 +267,8 @@ app.layout = html.Section([
                                                                 dmc.MultiSelect(
                                                                     placeholder="Select Operator Name",
                                                                     id="multiselect-operator",
-                                                                    value=all_blocks['Operator'].unique().tolist(),
-                                                                    data=all_blocks['Operator'].unique().tolist(),
+                                                                    value=all_blocks['operator'].unique().tolist(),
+                                                                    data=all_blocks['operator'].unique().tolist(),
                                                                     style={'marginTop':10},
                                                                     clearable=True,
                                                                     searchable=True,
@@ -278,7 +278,7 @@ app.layout = html.Section([
                                                                 html.H5('Number of Wells', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
                                                                     id='num-wells',
-                                                                    value=[all_blocks['num_wells'].min(), all_blocks['num_wells'].max()],
+                                                                    value=[all_blocks['num_well'].min(), all_blocks['num_well'].max()],
                                                                     max=60,
                                                                     min=0,
                                                                     marks=[
@@ -306,7 +306,7 @@ app.layout = html.Section([
                                                                 html.H5('Estimated Reserves in Millions of Barrels Oil', style={'marginTop':20}),
                                                                 dmc.RangeSlider(
                                                                     id='range-slider-reserve',
-                                                                    value=[all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max()],
+                                                                    value=[all_blocks['reserve'].min(), all_blocks['reserve'].max()],
                                                                     max=600,
                                                                     min=0,
                                                                     marks=[
@@ -342,8 +342,8 @@ app.layout = html.Section([
                                                         dmc.MultiSelect(
                                                             placeholder="Select Borehole Name",
                                                             id="multiselect-borehole",
-                                                            value=all_wells['Well_Name'].unique().tolist(),
-                                                            data=all_wells['Well_Name'].unique().tolist(),
+                                                            value=all_wells['name'].unique().tolist(),
+                                                            data=all_wells['name'].unique().tolist(),
                                                             style={'marginTop':10},
                                                             clearable=True,
                                                             searchable=True,
@@ -526,8 +526,8 @@ app.layout = html.Section([
 )
 
 def set_block_option(chosen_numwell, chosen_km, chosen_reserve, chosen_status, chosen_operator):
-    df_block = all_blocks[(all_blocks['num_wells'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['est_reserve'].between(chosen_reserve[0], chosen_reserve[1])) & (all_blocks['Status'].isin(chosen_status)) & (all_blocks['Operator'].isin(chosen_operator))]
-    return pd.unique(df_block['Block_Name'].to_list())
+    df_block = all_blocks[(all_blocks['num_well'].between(chosen_numwell[0], chosen_numwell[1])) & (all_blocks['sq_km'].between(chosen_km[0], chosen_km[1])) & (all_blocks['reserve'].between(chosen_reserve[0], chosen_reserve[1])) & (all_blocks['status'].isin(chosen_status)) & (all_blocks['operator'].isin(chosen_operator))]
+    return pd.unique(df_block['name'].to_list())
 
 @app.callback(
     Output('multiselect-borehole','data'),
@@ -538,8 +538,8 @@ def set_block_option(chosen_numwell, chosen_km, chosen_reserve, chosen_status, c
 )
 
 def set_well_option(chosen_orientation, chosen_status, chosen_purpose, chosen_type):
-    df_well = all_wells[(all_wells['Well_Orientation'].isin(chosen_orientation)) & (all_wells['Well_Status'].isin(chosen_status)) & (all_wells['Well_Purpose'].isin(chosen_purpose)) & (all_wells['Well_Type'].isin(chosen_type))]
-    return pd.unique(df_well['Well_Name'].to_list())
+    df_well = all_wells[(all_wells['orient'].isin(chosen_orientation)) & (all_wells['status'].isin(chosen_status)) & (all_wells['purpose'].isin(chosen_purpose)) & (all_wells['type'].isin(chosen_type))]
+    return pd.unique(df_well['name'].to_list())
 
 @app.callback(
     Output('multiselect-block','value'),
@@ -555,13 +555,13 @@ def reset_filter_block(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        reset_df = all_blocks[(all_blocks['num_wells'].between(all_blocks['num_wells'].min(), all_blocks['num_wells'].max())) & (all_blocks['sq_km'].between(all_blocks['sq_km'].min(), all_blocks['sq_km'].max())) & (all_blocks['est_reserve'].between(all_blocks['est_reserve'].min(), all_blocks['est_reserve'].max())) & (all_blocks['Status'].isin(all_blocks['Status'])) & (all_blocks['Operator'].isin(all_blocks['Operator']))]
-        reset_block_name = pd.unique(reset_df['Block_Name'].to_list())
-        reset_num_blocks = reset_df['num_wells'].min(), reset_df['num_wells'].max()
+        reset_df = all_blocks[(all_blocks['num_well'].between(all_blocks['num_well'].min(), all_blocks['num_well'].max())) & (all_blocks['sq_km'].between(all_blocks['sq_km'].min(), all_blocks['sq_km'].max())) & (all_blocks['reserve'].between(all_blocks['reserve'].min(), all_blocks['reserve'].max())) & (all_blocks['status'].isin(all_blocks['status'])) & (all_blocks['operator'].isin(all_blocks['operator']))]
+        reset_block_name = pd.unique(reset_df['name'].to_list())
+        reset_num_blocks = reset_df['num_well'].min(), reset_df['num_well'].max()
         reset_km_blocks = reset_df['sq_km'].min(), reset_df['sq_km'].max()
-        reset_reserve_blocks = reset_df['est_reserve'].min(), reset_df['est_reserve'].max()
+        reset_reserve_blocks = reset_df['reserve'].min(), reset_df['reserve'].max()
         reset_status_blocks = ['Exploration','Development','Production','Abandoned']
-        reset_operator_blocks = pd.unique(reset_df['Operator'].to_list())
+        reset_operator_blocks = pd.unique(reset_df['operator'].to_list())
         
         return reset_block_name, reset_num_blocks, reset_km_blocks, reset_reserve_blocks, reset_status_blocks, reset_operator_blocks
 
@@ -578,8 +578,8 @@ def reset_filter_well(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        reset_df = all_wells[(all_wells['Well_Orientation'].isin(all_wells['Well_Orientation'])) & (all_wells['Well_Status'].isin(all_wells['Well_Status'])) & (all_wells['Well_Purpose'].isin(all_wells['Well_Purpose'])) & (all_wells['Well_Type'].isin(all_wells['Well_Type']))]
-        reset_well_name = pd.unique(reset_df['Well_Name'].to_list())
+        reset_df = all_wells[(all_wells['orient'].isin(all_wells['orient'])) & (all_wells['status'].isin(all_wells['status'])) & (all_wells['purpose'].isin(all_wells['purpose'])) & (all_wells['type'].isin(all_wells['type']))]
+        reset_well_name = pd.unique(reset_df['name'].to_list())
         reset_orient = ['Vertical', 'Horizontal', 'Directional']
         reset_status = ['Active', 'Inactive','Shut-in','Suspended','Abandoned']
         reset_purpose = ['Exploration','Production','Appraisal','Injection','Monitoring','Abandonment']
@@ -597,8 +597,8 @@ def reset_filter_well(n_clicks):
 )
 
 def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, well_submitted_data, layout_map):
-    edited_layer= all_blocks[(all_blocks['Block_Name'].isin(block_submitted_value)) & (all_blocks['Block_Name'].isin(block_submitted_data))]
-    edited_point = all_wells[(all_wells['Well_Name'].isin(well_submitted_value)) & (all_wells['Well_Name'].isin(well_submitted_data))]
+    edited_layer= all_blocks[(all_blocks['name'].isin(block_submitted_value)) & (all_blocks['name'].isin(block_submitted_data))]
+    edited_point = all_wells[(all_wells['name'].isin(well_submitted_value)) & (all_wells['name'].isin(well_submitted_data))]
     
     layer_blocks = dl.GeoJSON(id='block_load',
                             data=json.loads(edited_layer.to_json()),
