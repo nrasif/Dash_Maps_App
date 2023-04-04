@@ -20,6 +20,8 @@ import geopandas as gpd
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
 
+all_blocks_download = all_blocks.copy()
+all_wells_download = all_wells.copy()
 
 all_blocks['tooltip'] = all_blocks['name']
 all_blocks['popup'] = '''
@@ -83,7 +85,7 @@ all_wells['popup'] = '''
     """
 
 # Write the data to a Shapefile (blocks)
-all_blocks.to_file('SHP files/all_blocks/all_blocks.shp')
+all_blocks_download.to_file('SHP files/all_blocks/all_blocks.shp')
 # Create a ZIP file containing all the Shapefile files
 with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
     for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
@@ -93,7 +95,7 @@ with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
 
 
 # Write the data to a Shapefile (wells)
-all_wells.to_file('SHP files/all_wells/all_wells.shp')
+all_wells_download.to_file('SHP files/all_wells/all_wells.shp')
 # Create a ZIP file containing all the Shapefile files
 with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
     for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
@@ -696,7 +698,7 @@ def generate_csv(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        return dcc.send_data_frame(all_blocks.to_csv, "MyCSV_Blocks.csv")
+        return dcc.send_data_frame(all_blocks_download.to_csv, "MyCSV_Blocks.csv")
 
 @app.callback(
     Output('download_geojson_df','data'),
@@ -739,7 +741,7 @@ def generate_csv(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        return dcc.send_data_frame(all_wells.to_csv, "MyCSV_Wells.csv")
+        return dcc.send_data_frame(all_wells_download.to_csv, "MyCSV_Wells.csv")
 
 @app.callback(
     Output('download_geojson_df2','data'),
