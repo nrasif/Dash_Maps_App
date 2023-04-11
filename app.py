@@ -1,5 +1,5 @@
 import dash
-from dash import Dash, html, dcc, ctx
+from dash import Dash, html, dcc, ctx, State
 from dash.dependencies import Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -14,8 +14,88 @@ import numpy as np
 from datetime import datetime, timedelta, date
 import json
 import zipfile
+import time
 
 import geopandas as gpd
+
+# --------------------Chat Bot-------------------------
+
+import nltk
+from nltk.stem import WordNetLemmatizer
+import pickle
+from keras.models import load_model
+
+lemmatizer = WordNetLemmatizer()
+model = load_model('chatbot_model/chatbot.h5')
+
+import random
+intents = json.loads(open('chatbot_model/data.json').read())
+words = pickle.load(open('chatbot_model/words.pkl','rb'))
+classes = pickle.load(open('chatbot_model/classes.pkl','rb'))
+
+def clean_up_sentence(sentence):
+
+    # tokenize the pattern - split words into array
+    sentence_words = nltk.word_tokenize(sentence)
+    
+    # stem each word - create short form for word
+    sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
+    return sentence_words
+
+
+# return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
+def bow(sentence, words, show_details=True):
+
+    # tokenize the pattern
+    sentence_words = clean_up_sentence(sentence)
+
+    # bag of words - matrix of N words, vocabulary matrix
+    bag = [0]*len(words) 
+    for s in sentence_words:
+        for i,w in enumerate(words):
+            if w == s: 
+               
+                # assign 1 if current word is in the vocabulary position
+                bag[i] = 1
+                if show_details:
+                    print ("found in bag: %s" % w)
+    return(np.array(bag))
+
+def predict_class(sentence, model):
+   
+    # filter out predictions below a threshold
+    p = bow(sentence, words,show_details=False)
+    res = model.predict(np.array([p]))[0]
+    error = 0.25
+    results = [[i,r] for i,r in enumerate(res) if r>error]
+    
+    # sort by strength of probability
+    results.sort(key=lambda x: x[1], reverse=True)
+    return_list = []
+    
+    for r in results:
+        return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
+    return return_list
+
+# function to get the response from the model
+def getResponse(ints, intents_json):
+    tag = ints[0]['intent']
+    list_of_intents = intents_json['intents']
+    for i in list_of_intents:
+        if(i['tag']== tag):
+            result = random.choice(i['responses'])
+            break
+    return result
+
+# function to predict the class and get the response
+def chatbot_response(text):
+    ints = predict_class(text, model)
+    res = getResponse(ints, intents)
+    return res
+
+
+
+# --------------------Chat Bot-------------------------
 
 all_blocks = gpd.read_file('GeoJSON Files/blocks.geojson')
 all_wells = gpd.read_file('GeoJSON Files/wells.geojson')
@@ -113,6 +193,8 @@ layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/service
 app = Dash(__name__, suppress_callback_exceptions=True, meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ])
+
+conv_hist=[]
 
 app.layout = html.Section([
     html.Div(className='drawer',
@@ -507,13 +589,10 @@ app.layout = html.Section([
                             dmc.AccordionPanel(
                                 html.Div(
                                     children = [
-                                        html.Div(className='response-chatbot',
-                                                 children=[
-                                                     dmc.Text('test')
-                                                     ]),
+                                        html.Div(className='response-chatbot',id='response-chatbot'),
                                         dmc.Textarea(
                                         placeholder='Send a message...',
-                                        id='input-message',
+                                        id='input-msg',
                                         style={'width':400, 'border': '2px solid #909090', 'border-radius':'5px'},
                                         variant='filled',
                                         autosize=True,
@@ -815,7 +894,30 @@ def generate_shp(n_clicks):
         with open('SHP zipfile/wells.zip', 'rb') as file:
             data = file.read()
         return dcc.send_bytes(data, "MySHP_Wells.zip")
+    
+@app.callback(
+    Output('response-chatbot','children'),
+    Input('submit-msg','n_clicks'),
+    State('input-msg','value')
+)
 
+def update_convo(click1, text):
+    global conv_hist
+    
+    if click1 > 0:
+        response = chatbot_response(text)
+        div_resp = [html.Div(className='response-chatbot')]
+        user = [html.H5('You :', style={'text-align':'left','font-weight':'bold'})]
+        rcvd = [html.H5(text, style={'text-align':'left','margin-bottom':'20px'})]
+        bot = [html.H5('MiniBot :', style={'text-align':'right'})]
+        rspd = [html.H5(response,style={'text-align':'right','margin-bottom':'5px'})]
+        
+        conv_hist = user + rcvd + bot + rspd + conv_hist
+        
+        return conv_hist
+    
+    else:
+        return ''
 
 @app.callback(
     Output("drawer", "opened"),
