@@ -907,12 +907,12 @@ def update_convo(click1, text):
     if click1 > 0:
         response = chatbot_response(text)
         div_resp = [html.Div(className='response-chatbot')]
-        user = [html.H5('You :', style={'text-align':'left','font-weight':'bold'})]
+        user = [html.H4('You :', style={'text-align':'left','font-weight':'bold'})]
         rcvd = [html.H5(text, style={'text-align':'left','margin-bottom':'20px'})]
-        bot = [html.H5('MiniBot :', style={'text-align':'right'})]
-        rspd = [html.H5(response,style={'text-align':'right','margin-bottom':'5px'})]
+        bot = [html.H4('MiniBot :', style={'text-align':'right'})]
+        rspd = [html.H5(response,style={'text-align':'left','margin-bottom':'15px'})]
         
-        conv_hist = user + rcvd + bot + rspd + conv_hist
+        conv_hist = conv_hist + rcvd + rspd
         
         return conv_hist
     
