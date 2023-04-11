@@ -177,3 +177,18 @@ body {
     background-color: #ebf2f7;
     padding-left: 10px;
 }
+
+.chatbot{
+    position: absolute;
+    top: 1100px;
+    left: 110px;
+    width: 500px;
+    height: 680px;
+}
+
+.response-chatbot{
+    width: 400px;
+    height: 500px;
+    max-height: 500px;
+    margin-bottom: 30px;
+}

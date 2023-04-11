@@ -493,6 +493,50 @@ app.layout = html.Section([
     className='content2',
     id='output-map'
 ),
+    
+    html.Div(
+        className='chatbot',
+        children=[
+            dmc.Accordion(
+                value='chatbot',
+                radius=10,
+                children=[
+                    dmc.AccordionItem(
+                        [
+                            dmc.AccordionControl('Chatbot', icon=DashIconify(icon='lucide:bot', width=25)),
+                            dmc.AccordionPanel(
+                                html.Div(
+                                    children = [
+                                        html.Div(className='response-chatbot',
+                                                 children=[
+                                                     dmc.Text('test')
+                                                     ]),
+                                        dmc.Textarea(
+                                        placeholder='Send a message...',
+                                        id='input-message',
+                                        style={'width':400, 'border': '2px solid #909090', 'border-radius':'5px'},
+                                        variant='filled',
+                                        autosize=True,
+                                        minRows=2,
+                                        maxRows=4
+                                        ),
+                                        dmc.ActionIcon(DashIconify(icon="ri:send-plane-fill", width=20), size=30, \
+                                            variant="outline", id='submit-msg', color='gray', n_clicks=0, style={'position':'absolute',
+                                                                                                                 'right':'40px',
+                                                                                                                 'bottom':'57px'}),
+                                        dmc.ActionIcon(DashIconify(icon='codicon:debug-restart', width=20), size=30, \
+                                            variant="outline", id='reset-msg', color='gray', n_clicks=0, style={'position':'absolute',
+                                                                                                                'right':'40px',
+                                                                                                                'bottom':'20px'})
+                                    ]
+                                ),
+                            )
+                        ], value='chatbot'
+                    )
+                ], variant='contained'
+            )
+        ]
+    ),
 
     html.Div(
         className='dashboard-content',
