@@ -589,7 +589,12 @@ app.layout = html.Section([
                             dmc.AccordionPanel(
                                 html.Div(
                                     children = [
-                                        html.Div(className='response-chatbot',id='response-chatbot'),
+                                        html.Div(className='response-chatbot', children=[
+                                            dmc.LoadingOverlay(
+                                                html.Div(className='response-chatbot', id='response-chatbot'),
+                                                 loaderProps={"variant": "dots", "color": "dark", "size": "xl"},
+                                                 overlayBlur=2,
+                                                 overlayColor='#F8F9FA')]),
                                         dmc.Textarea(
                                         placeholder='Send a message...',
                                         id='input-msg',
@@ -898,26 +903,39 @@ def generate_shp(n_clicks):
 @app.callback(
     Output('response-chatbot','children'),
     Input('submit-msg','n_clicks'),
+    Input('reset-msg','n_clicks'),
     State('input-msg','value')
 )
 
-def update_convo(click1, text):
+def update_convo(click1, click2, text):
+    
+    button_click = ctx.triggered_id
+    
     global conv_hist
     
-    if click1 > 0:
+    if button_click == 'submit-msg':
+        time.sleep(1)
+        
         response = chatbot_response(text)
-        div_resp = [html.Div(className='response-chatbot')]
-        user = [html.H4('You :', style={'text-align':'left','font-weight':'bold'})]
-        rcvd = [html.H5(text, style={'text-align':'left','margin-bottom':'20px'})]
-        bot = [html.H4('MiniBot :', style={'text-align':'right'})]
-        rspd = [html.H5(response,style={'text-align':'left','margin-bottom':'15px'})]
+        rcvd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="mdi:user-outline", width=20), color='gray', radius='xl', size='sm', style={'border': '2px solid #868E96', 'border-radius':'50%'})), span='content',style={'margin-top':'20px'}),
+                                               dmc.Col(html.Div(html.H5(text,style={'text-align':'left'})), style={'max-width':'360px','margin-top':'20px'})])]
+        rspd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="lucide:bot", width=15), color='blue', radius='xl', size='sm', style={'border': '2px solid #53A5EC', 'border-radius':'50%'})), span='content',style={'margin-top':'20px'}),
+                                               dmc.Col(html.Div(html.H5(response,style={'text-align':'left'})), style={'max-width':'360px','margin-top':'20px'})])]
         
         conv_hist = conv_hist + rcvd + rspd
         
         return conv_hist
     
+    elif button_click == 'reset-msg':
+        time.sleep(1)
+        conv_hist = []
+        clean_comp = [html.H5('message is clear')]
+        return clean_comp
+    
     else:
-        return ''
+        default_comp = [html.H5('Say Hi to our little staff here, a MiniBot!', style={'text-align':'center'}),
+                        html.H5('pssstt... he knows everything about this dashboard', style={'text-align':'center'})]
+        return default_comp
 
 @app.callback(
     Output("drawer", "opened"),
