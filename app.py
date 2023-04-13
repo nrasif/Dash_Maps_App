@@ -585,16 +585,17 @@ app.layout = html.Section([
                 children=[
                     dmc.AccordionItem(
                         [
-                            dmc.AccordionControl('Chatbot', icon=DashIconify(icon='lucide:bot', width=25)),
+                            dmc.AccordionControl('Waviv MiniBot', icon=DashIconify(icon='lucide:bot', width=25)),
                             dmc.AccordionPanel(
                                 html.Div(
                                     children = [
-                                        html.Div(className='response-chatbot', children=[
+                                        html.Div(className='div-chatbot', children=[
                                             dmc.LoadingOverlay(
-                                                html.Div(className='response-chatbot', id='response-chatbot'),
+                                                html.Div(id='response-chatbot'),
                                                  loaderProps={"variant": "dots", "color": "dark", "size": "xl"},
                                                  overlayBlur=2,
-                                                 overlayColor='#F8F9FA')]),
+                                                 overlayColor='#F8F9FA', style={'height':'500px'}
+                                                 )]),
                                         dmc.Textarea(
                                         placeholder='Send a message...',
                                         id='input-msg',
@@ -604,14 +605,14 @@ app.layout = html.Section([
                                         minRows=2,
                                         maxRows=4
                                         ),
-                                        dmc.ActionIcon(DashIconify(icon="ri:send-plane-fill", width=20), size=30, \
+                                        dmc.ActionIcon(DashIconify(icon="ri:send-plane-fill", width=20), size=34, \
                                             variant="outline", id='submit-msg', color='gray', n_clicks=0, style={'position':'absolute',
                                                                                                                  'right':'40px',
-                                                                                                                 'bottom':'57px'}),
-                                        dmc.ActionIcon(DashIconify(icon='codicon:debug-restart', width=20), size=30, \
+                                                                                                                 'bottom':'52px'}),
+                                        dmc.ActionIcon(DashIconify(icon='codicon:debug-restart', width=20), size=34, \
                                             variant="outline", id='reset-msg', color='gray', n_clicks=0, style={'position':'absolute',
                                                                                                                 'right':'40px',
-                                                                                                                'bottom':'20px'})
+                                                                                                                'bottom':'16px'})
                                     ]
                                 ),
                             )
@@ -917,24 +918,31 @@ def update_convo(click1, click2, text):
         time.sleep(1)
         
         response = chatbot_response(text)
-        rcvd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="mdi:user-outline", width=20), color='gray', radius='xl', size='sm', style={'border': '2px solid #868E96', 'border-radius':'50%'})), span='content',style={'margin-top':'20px'}),
-                                               dmc.Col(html.Div(html.H5(text,style={'text-align':'left'})), style={'max-width':'360px','margin-top':'20px'})])]
-        rspd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="lucide:bot", width=15), color='blue', radius='xl', size='sm', style={'border': '2px solid #53A5EC', 'border-radius':'50%'})), span='content',style={'margin-top':'20px'}),
-                                               dmc.Col(html.Div(html.H5(response,style={'text-align':'left'})), style={'max-width':'360px','margin-top':'20px'})])]
         
-        conv_hist = conv_hist + rcvd + rspd
+        whole_div = html.Div(children=[
+            dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="mdi:user-outline", width=20), color='gray', radius='xl', size='sm', style={'border': '2px solid #868E96', 'border-radius':'50%'})), span='content',className='grid-profile'),
+                                               dmc.Col(html.Div(html.H5(text,style={'text-align':'left'})), className='grid-chat')]),
+            dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="lucide:bot", width=15), color='blue', radius='xl', size='sm', style={'border': '2px solid #53A5EC', 'border-radius':'50%'})), span='content', className='grid-profile'),
+                                               dmc.Col(html.Div(html.H5(response,style={'text-align':'left'})), className='grid-chat')])
+        ])
+        # rcvd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="mdi:user-outline", width=20), color='gray', radius='xl', size='sm', style={'border': '2px solid #868E96', 'border-radius':'50%'})), span='content',className='grid-profile'),
+        #                                        dmc.Col(html.Div(html.H5(text,style={'text-align':'left'})), className='grid-chat')])]
+        # rspd = [dmc.Grid(gutter='xs',children=[dmc.Col(html.Div(dmc.Avatar(DashIconify(icon="lucide:bot", width=15), color='blue', radius='xl', size='sm', style={'border': '2px solid #53A5EC', 'border-radius':'50%'})), span='content', className='grid-profile'),
+        #                                        dmc.Col(html.Div(html.H5(response,style={'text-align':'left'})), className='grid-chat')])]
+        
+        conv_hist.append(whole_div)
         
         return conv_hist
     
     elif button_click == 'reset-msg':
         time.sleep(1)
         conv_hist = []
-        clean_comp = [html.H5('message is clear')]
+        clean_comp = [html.H5('Message is clear', className='default_chat')]
         return clean_comp
     
     else:
-        default_comp = [html.H5('Say Hi to our little staff here, a MiniBot!', style={'text-align':'center'}),
-                        html.H5('pssstt... he knows everything about this dashboard', style={'text-align':'center'})]
+        default_comp = [html.H5('Say Hi to our little staff here, a Waviv MiniBot!', className='default_chat'),
+                        html.H5('pssstt... he knows everything about this dashboard', style={'text-align':'center','width':'400px'})]
         return default_comp
 
 @app.callback(

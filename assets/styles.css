@@ -183,12 +183,36 @@ body {
     top: 1100px;
     left: 110px;
     width: 500px;
-    height: 680px;
+    /* height: 680px; */
 }
 
-.response-chatbot{
+.div-chatbot{
     width: 400px;
     height: 500px;
     max-height: 500px;
     margin-bottom: 30px;
+}
+
+.default_chat{
+    width: 400px;
+    margin-top: -5px;
+    padding-top: 230px;
+    text-align: center;
+}
+
+.grid-profile{
+    margin-top: 20px;
+}
+
+.grid-chat{
+    margin-top: 20px;
+    max-width: 360px;
+}
+
+#response-chatbot{
+    height: 500px;
+    width: 440px;
+    overflow: auto;
+    overflow-x: hidden;
+
 }
