@@ -164,25 +164,26 @@ all_wells['popup'] = '''
     </tr>
     """
 
-# Write the data to a Shapefile (blocks)
-all_blocks_download.to_file('SHP files/all_blocks/all_blocks.shp')
+# Write the data to a Shapefile
+def shp_writer(data, path):
+    return data.to_file(driver='ESRI Shapefile', filename=path)
+
+shp_writer(all_blocks_download, 'SHP files/all_blocks/all_blocks.shp')
+shp_writer(all_wells_download, 'SHP files/all_wells/all_wells.shp')
+
 # Create a ZIP file containing all the Shapefile files
-with zipfile.ZipFile('SHP zipfile/all_blocks.zip', 'w') as zip:
-    for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
-        filename = 'SHP files/all_blocks{}'.format(ext)
-        if os.path.exists(filename):
-            zip.write(filename)
+def zip_shp(path_zip, data_shp):
+    with zipfile.ZipFile(path_zip, 'w') as zip:
+        for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
+            filename = data_shp.format(ext)
+            if os.path.exists(filename):
+                zip.write(filename)
+
+zip_shp(path_zip='SHP zipfile/blocks.zip', data_shp='SHP files/all_blocks/all_blocks{}')
+zip_shp(path_zip='SHP zipfile/wells.zip', data_shp='SHP files/all_wells/all_wells{}')
 
 
-# Write the data to a Shapefile (wells)
-all_wells_download.to_file('SHP files/all_wells/all_wells.shp')
-# Create a ZIP file containing all the Shapefile files
-with zipfile.ZipFile('SHP zipfile/wells.zip', 'w') as zip:
-    for ext in ['.shp', '.dbf', '.shx', '.prj', '.cpg']:
-        filename = 'SHP files/wells{}'.format(ext)
-        if os.path.exists(filename):
-            zip.write(filename)
-            
+
 layout_data = [['Satellite','https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','dark'],
                ['Dark','https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','dark'],
                ['Light','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png','dark'],
@@ -756,7 +757,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     
     if edited_layer.empty and edited_point.empty:
         # Generate map without polygons and points
-        return dl.Map(children=[dl.TileLayer(url=layout_map),
+        return dl.Map(children=[dl.TileLayer(url=layout_map, attribution = '&copy; <a href="http://www.waviv.com/">Waviv Technologies</a> '),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
@@ -771,7 +772,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     elif edited_layer.empty:
         #Generate map without polygons
         return dl.Map(children=[dl.GeoJSON(layer_well),
-                        dl.TileLayer(url=layout_map),
+                        dl.TileLayer(url=layout_map, attribution = '&copy; <a href="http://www.waviv.com/">Waviv Technologies</a> '),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
@@ -786,7 +787,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
     elif edited_point.empty:
         #Generate map without points
         return dl.Map(children=[dl.GeoJSON(layer_blocks, id='layer_blocks'),
-                        dl.TileLayer(url=layout_map),
+                        dl.TileLayer(url=layout_map, attribution = '&copy; <a href="http://www.waviv.com/">Waviv Technologies</a> '),
                         dl.GestureHandling(),
                         dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                         activeColor="#C29200", completedColor="#972158")],
@@ -802,7 +803,7 @@ def plot_map(block_submitted_value, block_submitted_data, well_submitted_value, 
         
     return dl.Map(children=[dl.GeoJSON(layer_blocks, id='layer_blocks'),
                     dl.GeoJSON(layer_well),
-                    dl.TileLayer(url=layout_map),
+                    dl.TileLayer(url=layout_map, attribution = '&copy; <a href="http://www.waviv.com/">Waviv Technologies</a> '),
                     dl.GestureHandling(),
                     dl.MeasureControl(position="topleft", primaryLengthUnit="kilometers", primaryAreaUnit="hectares",
                                     activeColor="#C29200", completedColor="#972158")],
@@ -882,7 +883,7 @@ def generate_geojson(n_clicks):
         raise PreventUpdate
     else:
         # Read the generated JSON file and send it as bytes
-        with open('GeoJSON files/wells.geojson', 'r') as file:
+        with open('GeoJSON files/wells.geojson', 'rb') as file:
             data = file.read()
         return dcc.send_bytes(data.encode(), "MyGeoJSON_Wells.json")
 
@@ -961,4 +962,4 @@ def drawer(n_clicks):
     return True
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port = 1514)
+    app.run_server(debug=True, port = 8000)
